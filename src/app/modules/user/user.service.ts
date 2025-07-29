@@ -8,7 +8,7 @@ const createUser = async (payload: Partial<IUser>) => {
   const isUserExist = await User.findOne({ phone });
 
   if (isUserExist) {
-    throw new Error("user alreay exist");
+    throw new Error("user alreay exist with this phone number");
   }
 
   const hashedPin = await bcryptjs.hash(pin as string, 10);
