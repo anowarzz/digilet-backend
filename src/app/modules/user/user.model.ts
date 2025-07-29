@@ -18,8 +18,8 @@ const userSchema = new Schema<IUser>(
     },
     pin: { type: String, required: [true, "PIN is required"] },
     name: { type: String, required: [true, "Name is required"] },
-    email: { type: String },
-    userName: { type: String },
+    email: { type: String , unique: true},
+    userName: { type: String , unique: true},
     auths: [authProviderSchema],
     role: {
       type: String,
