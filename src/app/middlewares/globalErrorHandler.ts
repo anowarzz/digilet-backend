@@ -1,23 +1,72 @@
-// create a basic global error handler middleware
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from "express";
-import httpStatus from "http-status-codes";
-import { sendResponse } from "../utils/sendResponse";
+import { envVars } from "../config/env";
+import AppError from "../errorHelpers/appError";
+import { handleCastError } from "../helpers/handleCastError";
+import { handleDuplicateError } from "../helpers/handleDuplicateError";
+import { handleValidationError } from "../helpers/handleValidationError";
+import { handleZodError } from "../helpers/handleZodError";
+import { TErrorSources } from "../interfaces/error.types";
 
 export const globalErrorHandler = (
-  error: Error,
+  err: any,
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  console.error("Global Error Handler:", error);
+  if (envVars.NODE_ENV === "development") {
+    console.error("Global Error Handler:", err);
+  }
 
-  const statusCode = httpStatus.INTERNAL_SERVER_ERROR;
-  const message = error.message || "Internal Server Error";
+  let statusCode = 500;
+  let message = `Something went wrong !`;
+  let errorSources: TErrorSources[] = [];
 
-  sendResponse(res, {
-    statusCode,
+  //Duplicate error
+  if (err.code === 11000) {
+    const simplifiedError = handleDuplicateError(err);
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+  }
+
+  // cast error   / Object Id invalid
+  else if (err.name === "CastError") {
+    const simplifiedError = handleCastError(err);
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+  }
+
+  // zod error
+  else if (err.name === "ZodError") {
+    const simplifiedError = handleZodError(err);
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorSources = simplifiedError.errorSources as TErrorSources[];
+  }
+
+  // validation error
+  else if (err.name === "ValidationError") {
+    const simplifiedError = handleValidationError(err);
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorSources = simplifiedError.errorSources as TErrorSources[];
+  }
+
+  // custom error
+  else if (err instanceof AppError) {
+    statusCode = err.statusCode;
+    message = err.message;
+  } else if (err instanceof Error) {
+    statusCode = 500;
+    message = err.message;
+  }
+
+  res.status(statusCode).json({
     success: false,
     message,
-    data: null,
+    errorSources,
+    error: envVars.NODE_ENV === "development" ? err : null,
+    stack: envVars.NODE_ENV === "development" ? err.stack : null,
   });
 };

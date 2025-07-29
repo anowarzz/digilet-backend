@@ -7,13 +7,13 @@ export const createUserZodSchema = z.object({
     .string({ error: "Phone Number must be string" })
     .regex(/^(?:\+8801\d{9}|01\d{9})$/, {
       message:
-        "Phone number must be  Bangladesh number. Format: +8801XXXXXXXXX or 01XXXXXXXXX",
+        "Phone number must be  Bangladeshi number. Format: +8801XXXXXXXXX or 01XXXXXXXXX",
     }),
 
   pin: z
     .string({ error: "PIN must be string" })
     .min(1, "PIN is required")
-    .length(5, "PIN must be exactly 5 characters")
+    .length(5, "PIN must be exactly 5 characters")  
     .regex(/^\d+$/, "PIN must contain only numbers"),
 
   name: z
