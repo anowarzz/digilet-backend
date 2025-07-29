@@ -4,9 +4,9 @@ export interface IAuthProvider {
 }
 
 export enum UserRole {
-  USER = "user",
-  AGENT = "agent",
-  ADMIN = "admin",
+  USER = "USER",
+  AGENT = "AGENT",
+  ADMIN = "ADMIN",
 }
 
 export enum UserStatus {
