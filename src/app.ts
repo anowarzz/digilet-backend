@@ -3,6 +3,7 @@ import express, { Application, Request, Response } from "express";
 import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
 import router from "./app/routes";
 import notFound from "./app/middlewares/notFound";
+import "./app/config/passport"
 
 // create app
 const app: Application = express();
