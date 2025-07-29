@@ -1,4 +1,5 @@
 import bcryptjs from "bcryptjs";
+import { envVars } from "../../config/env";
 import { IAuthProvider, IUser } from "./user.interface";
 import { User } from "./user.model";
 
@@ -11,14 +12,17 @@ const createUser = async (payload: Partial<IUser>) => {
     throw new Error("user alreay exist with this phone number");
   }
 
-  const hashedPin = await bcryptjs.hash(pin as string, 10);
+  const hashedPin = await bcryptjs.hash(
+    pin as string,
+    Number(envVars.BCRYPT_SALT_ROUNDS)
+  );
 
   const authProvider: IAuthProvider = {
     provider: "credentials",
     providerId: phone as string,
   };
 
-  const status = role === "agent" ? "PENDING" : "ACTIVE";
+  const status = role === "AGENT" ? "PENDING" : "ACTIVE";
 
   const user = await User.create({
     phone,
