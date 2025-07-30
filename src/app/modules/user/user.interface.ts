@@ -31,4 +31,5 @@ export interface IUser {
   status?: UserStatus;
   isVerified?: boolean;
   isDeleted?: boolean;
+  walletId?: string;
 }

@@ -18,8 +18,8 @@ const userSchema = new Schema<IUser>(
     },
     password: { type: String, required: [true, "Password is required"] },
     name: { type: String, required: [true, "Name is required"] },
-    email: { type: String , unique: true},
-    userName: { type: String , unique: true},
+    email: { type: String, unique: true },
+    userName: { type: String, unique: true },
     auths: [authProviderSchema],
     role: {
       type: String,
@@ -35,6 +35,10 @@ const userSchema = new Schema<IUser>(
     },
     isVerified: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false },
+    walletId: {
+      type: Schema.Types.ObjectId,
+      ref: "Wallet",
+    },
   },
   {
     timestamps: true,
