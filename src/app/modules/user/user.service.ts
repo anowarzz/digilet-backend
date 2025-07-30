@@ -1,9 +1,10 @@
-import httpStatus from "http-status-codes";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import bcryptjs from "bcryptjs";
+import httpStatus from "http-status-codes";
+import { JwtPayload } from "jsonwebtoken";
 import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/appError";
-import { IAuthProvider, IUser } from "./user.interface";
+import { IAuthProvider, IUser, UserRole } from "./user.interface";
 import { User } from "./user.model";
 
 const createUser = async (payload: Partial<IUser>) => {
@@ -68,8 +69,68 @@ const getSingleUser = async (userId: string) => {
   return rest;
 };
 
+// update a user
+const updateUser = async (
+  userId: string,
+  payload: Partial<IUser>,
+  decodedToken: JwtPayload
+) => {
+  // check if user exist with this id
+  const ifUserExist = await User.findById(userId);
+
+  if (!ifUserExist) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "User does not exist with this id"
+    );
+  }
+
+  // prevent user and agent to update role
+  if (payload.role) {
+    if (
+      decodedToken.role === UserRole.USER ||
+      decodedToken.role === UserRole.AGENT
+    ) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "You are not authorized updating role"
+      );
+    }
+  }
+
+  // prevent user and agent to update status , isVerified, isDeleted
+  if (payload.status || payload.isDeleted || payload.isVerified) {
+    if (
+      decodedToken.role === UserRole.USER ||
+      decodedToken.role === UserRole.AGENT
+    ) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "You are not authorized for upadating account status"
+      );
+    }
+  }
+
+  // hashing updated password
+  if (payload.password) {
+    payload.password = await bcryptjs.hash(
+      payload.password,
+      envVars.BCRYPT_SALT_ROUNDS
+    );
+  }
+
+  // update operation
+  const updatedUser = await User.findByIdAndUpdate(userId, payload, {
+    new: true,
+    runValidators: true,
+  });
+
+  return updatedUser;
+};
+
 export const userServices = {
   createUser,
   getAllUsers,
   getSingleUser,
+  updateUser,
 };

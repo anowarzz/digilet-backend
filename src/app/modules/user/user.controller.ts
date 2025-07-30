@@ -1,12 +1,11 @@
-import { userServices } from './user.service';
+import { userServices } from "./user.service";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { NextFunction, Request, Response } from "express";
-import { catchAsync } from "../../utils/catchAsync";
-import { userServices } from "./user.service";
-import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from "http-status-codes";
-
+import { JwtPayload } from "jsonwebtoken";
+import { catchAsync } from "../../utils/catchAsync";
+import { sendResponse } from "../../utils/sendResponse";
 
 // create user
 const createUser = catchAsync(
@@ -23,7 +22,6 @@ const createUser = catchAsync(
   }
 );
 
-
 // get all users
 const getAllUsers = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -38,7 +36,6 @@ const getAllUsers = catchAsync(
     });
   }
 );
-
 
 // get single user
 const getSingleUser = catchAsync(
@@ -55,11 +52,31 @@ const getSingleUser = catchAsync(
   }
 );
 
+//  update a user
+const updateUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.id;
+    const verifiedToken = req.user;
+    const payload = req.body;
 
+    const user = await userServices.updateUser(
+      userId,
+      payload,
+      verifiedToken as JwtPayload
+    );
 
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "User Updated Successfully",
+      data: user,
+    });
+  }
+);
 
 export const userControllers = {
   createUser,
   getAllUsers,
   getSingleUser,
+  updateUser,
 };

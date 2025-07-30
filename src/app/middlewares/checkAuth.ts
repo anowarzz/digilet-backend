@@ -50,6 +50,8 @@ export const checkAuth =
         throw new AppError(403, "Unauthorized access");
       }
 
+      req.user = verifiedToken;
+
       next();
     } catch (error) {
       next(error);
