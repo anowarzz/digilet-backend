@@ -2,6 +2,7 @@
 import bcryptjs from "bcryptjs";
 import passport from "passport";
 import { Strategy as localStrategy } from "passport-local";
+import { UserStatus } from "../modules/user/user.interface";
 import { User } from "../modules/user/user.model";
 
 // passport local auth
@@ -19,6 +20,16 @@ passport.use(
 
         if (!isUserExist) {
           return done(null, false, { message: "User does not exist" });
+        }
+
+        if (
+          isUserExist.status === UserStatus.BLOCKED ||
+          isUserExist.status === UserStatus.SUSPENDED
+        ) {
+          return done(`User is ${isUserExist.status} , cannot login`);
+        }
+        if (isUserExist.isDeleted) {
+          return done("This user is deleted ! does not exist anymore");
         }
 
         // check password match
@@ -43,8 +54,6 @@ passport.use(
 passport.serializeUser((user: any, done: (err: any, id?: unknown) => void) => {
   done(null, user._id);
 });
-
-
 
 // deserialize user
 passport.deserializeUser(async (id: string, done: any) => {
