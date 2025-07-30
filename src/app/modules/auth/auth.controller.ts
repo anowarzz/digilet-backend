@@ -9,6 +9,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { setAuthCookie } from "../../utils/setCookie";
 import { createUserToken } from "../../utils/userTokens";
+import e from "cors";
 
 // user login with credentials
 const credentialsLogin = catchAsync(
@@ -38,6 +39,34 @@ const credentialsLogin = catchAsync(
   }
 );
 
+
+
+/*/ log out user /*/
+const logOut = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "User Logged Out Successfully",
+      data: null,
+    });
+  }
+);
+
+
+
 export const AuthControllers = {
   credentialsLogin,
+  logOut,
 };
