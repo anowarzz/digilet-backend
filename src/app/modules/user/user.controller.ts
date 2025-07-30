@@ -1,3 +1,4 @@
+import { userServices } from './user.service';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { NextFunction, Request, Response } from "express";
@@ -22,6 +23,23 @@ const createUser = catchAsync(
   }
 );
 
+
+// get all users
+const getAllUsers = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const users = await userServices.getAllUsers();
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Users Retrieved Successfully",
+      meta: users.meta,
+      data: users.data,
+    });
+  }
+);
+
 export const userControllers = {
   createUser,
+  getAllUsers,
 };
