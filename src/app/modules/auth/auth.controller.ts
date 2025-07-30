@@ -4,11 +4,11 @@
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
 import passport from "passport";
-import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/appError";
 import { catchAsync } from "../../utils/catchAsync";
-import { generateToken } from "../../utils/jwt";
 import { sendResponse } from "../../utils/sendResponse";
+import { setAuthCookie } from "../../utils/setCookie";
+import { createUserToken } from "../../utils/userTokens";
 
 // user login with credentials
 const credentialsLogin = catchAsync(
@@ -22,32 +22,17 @@ const credentialsLogin = catchAsync(
         return next(new AppError(401, info.message));
       }
 
+      const userTokens = createUserToken(user);
+
       const { password: pass, ...rest } = user.toObject();
 
-      // generate JWT tokens
-
-      const jwtPayload = {
-        userId: user._id,
-        phone: user.phone,
-        role: user.role,
-      };
-
-      const accessToken = generateToken(
-        jwtPayload,
-        envVars.JWT_ACCESS_SECRET,
-        envVars.JWT_ACCESS_EXPIRES
-      );
-
-      res.cookie("accessToken", accessToken, {
-        httpOnly: true,
-        secure: false,
-      });
+      setAuthCookie(res, userTokens);
 
       sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
         message: "User Logged In Successfully",
-        data: { ...rest },
+        data: { user: rest, accessToken: userTokens.accessToken },
       });
     })(req, res, next);
   }
