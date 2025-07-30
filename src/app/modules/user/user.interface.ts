@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+
 export interface IAuthProvider {
   provider: "credentials" | "google";
   providerId: string;
@@ -31,5 +33,5 @@ export interface IUser {
   status?: UserStatus;
   isVerified?: boolean;
   isDeleted?: boolean;
-  walletId?: string;
+  wallet?: Types.ObjectId;
 }

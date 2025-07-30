@@ -12,6 +12,8 @@ interface EnvConfig {
   JWT_ACCESS_EXPIRES: string;
   JWT_REFRESH_EXPIRES: string;
   BCRYPT_SALT_ROUNDS: string;
+  FRONTEND_URL?: string;
+  INITIAL_WALLET_BALANCE?: string;
 }
 
 const loadEnvVariables = (): EnvConfig => {
@@ -24,6 +26,8 @@ const loadEnvVariables = (): EnvConfig => {
     "JWT_ACCESS_EXPIRES",
     "JWT_REFRESH_EXPIRES",
     "BCRYPT_SALT_ROUNDS",
+    "FRONTEND_URL",
+    "INITIAL_WALLET_BALANCE",
   ];
 
   requiredEnvVariables.forEach((key) => {
@@ -41,6 +45,8 @@ const loadEnvVariables = (): EnvConfig => {
     JWT_ACCESS_EXPIRES: process.env.JWT_ACCESS_EXPIRES as string,
     JWT_REFRESH_EXPIRES: process.env.JWT_REFRESH_EXPIRES as string,
     BCRYPT_SALT_ROUNDS: process.env.BCRYPT_SALT_ROUNDS as string,
+    FRONTEND_URL: process.env.FRONTEND_URL as string,
+    INITIAL_WALLET_BALANCE: process.env.INITIAL_WALLET_BALANCE as string,
   };
 };
 

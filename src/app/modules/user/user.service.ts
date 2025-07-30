@@ -2,45 +2,84 @@
 import bcryptjs from "bcryptjs";
 import httpStatus from "http-status-codes";
 import { JwtPayload } from "jsonwebtoken";
+import { Types } from "mongoose";
 import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/appError";
+import { getWalletId } from "../../utils/generateIDs";
+import { IWallet } from "../wallet/wallet.interface";
+import { Wallet } from "../wallet/wallet.model";
 import { IAuthProvider, IUser, UserRole } from "./user.interface";
 import { User } from "./user.model";
 
 /*/  create user  /*/
 const createUser = async (payload: Partial<IUser>) => {
-  const { phone, password, role, ...userData } = payload;
+  const session = await User.startSession();
+  session.startTransaction();
 
-  const ifUserExist = await User.findOne({ phone });
+  try {
+    const { phone, password, role, name, ...userData } = payload;
 
-  if (ifUserExist) {
-    throw new Error("user alreay exist with this phone number");
+    const ifUserExist = await User.findOne({ phone });
+
+    if (ifUserExist) {
+      throw new Error("user alreay exist with this phone number");
+    }
+
+    const hashedPassword = await bcryptjs.hash(
+      password as string,
+      Number(envVars.BCRYPT_SALT_ROUNDS)
+    );
+
+    const authProvider: IAuthProvider = {
+      provider: "credentials",
+      providerId: phone as string,
+    };
+
+    const status = role === "AGENT" ? "PENDING" : "ACTIVE";
+
+    const user = new User({
+      phone,
+      password: hashedPassword,
+      name,
+      role,
+      status,
+      auths: [authProvider],
+      ...userData,
+    });
+
+    await user.save({ session });
+
+    // create wallet for user & agent automatically
+
+
+    
+
+
+    if (role === UserRole.AGENT || role === UserRole.USER) {
+      const walletPayload: Partial<IWallet> = {
+        userId: new Types.ObjectId(user._id), 
+        balance: Number(envVars.INITIAL_WALLET_BALANCE),
+        walletId: getWalletId(name),
+      };
+
+      const wallet = await Wallet.create([walletPayload], { session });
+
+      // update user with walletId
+      user.wallet = wallet[0]._id;
+      await user.save({ session });
+    }
+
+    const { password: pass, ...rest } = user.toObject();
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return rest;
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
   }
-
-  const hashedPassword = await bcryptjs.hash(
-    password as string,
-    Number(envVars.BCRYPT_SALT_ROUNDS)
-  );
-
-  const authProvider: IAuthProvider = {
-    provider: "credentials",
-    providerId: phone as string,
-  };
-
-  const status = role === "AGENT" ? "PENDING" : "ACTIVE";
-
-  const user = await User.create({
-    phone,
-    password: hashedPassword,
-    role,
-    status,
-    auths: [authProvider],
-    ...userData,
-  });
-
-  const { password: pass, ...rest } = user.toObject();
-
-  return rest;
 };
 
 /*/ get all users /*/

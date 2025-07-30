@@ -35,7 +35,7 @@ const userSchema = new Schema<IUser>(
     },
     isVerified: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false },
-    walletId: {
+    wallet: {
       type: Schema.Types.ObjectId,
       ref: "Wallet",
     },

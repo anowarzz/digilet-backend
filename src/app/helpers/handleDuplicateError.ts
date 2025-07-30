@@ -6,6 +6,8 @@ export const handleDuplicateError = (err: any): TGenericErrorResponse => {
 
   return {
     statusCode: 400,
-    message: `${matchedArray[1]} already exists!`,
+    message: matchedArray
+      ? `${matchedArray[1]} already exists!`
+      : "Duplicate entry!",
   };
 };
