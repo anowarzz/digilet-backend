@@ -7,12 +7,13 @@ import AppError from "../../errorHelpers/appError";
 import { IAuthProvider, IUser, UserRole } from "./user.interface";
 import { User } from "./user.model";
 
+/*/  create user  /*/
 const createUser = async (payload: Partial<IUser>) => {
   const { phone, password, role, ...userData } = payload;
 
-  const isUserExist = await User.findOne({ phone });
+  const ifUserExist = await User.findOne({ phone });
 
-  if (isUserExist) {
+  if (ifUserExist) {
     throw new Error("user alreay exist with this phone number");
   }
 
@@ -42,11 +43,11 @@ const createUser = async (payload: Partial<IUser>) => {
   return rest;
 };
 
-// get all users
+/*/ get all users /*/
 const getAllUsers = async () => {
-  const users = await User.find({});
+  const users = await User.find({ isDeleted: false }).select("-password");
 
-  const totalUsers = await User.countDocuments({});
+  const totalUsers = await User.countDocuments({ isDeleted: false });
 
   return {
     data: users,
@@ -56,20 +57,29 @@ const getAllUsers = async () => {
   };
 };
 
-// get single user
+/*/ get single user  /*/
 const getSingleUser = async (userId: string) => {
-  const user = await User.findById(userId);
+  const user = await User.findById(userId).select("-password");
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
   }
 
-  const { password: pass, ...rest } = user.toObject();
-
-  return rest;
+  return user;
 };
 
-// update a user
+/*/ get user profile -> get me  /*/
+const getMyProfile = async (userId: string) => {
+  const user = await User.findById(userId).select("-password");
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+  }
+
+  return user;
+};
+
+/*/ update a user /*/
 const updateUser = async (
   userId: string,
   payload: Partial<IUser>,
@@ -123,14 +133,36 @@ const updateUser = async (
   const updatedUser = await User.findByIdAndUpdate(userId, payload, {
     new: true,
     runValidators: true,
-  });
+  }).select("-password");
 
   return updatedUser;
+};
+
+/*/  delete a user /*/
+const deleteUser = async (userId: string) => {
+  // check if user exist with this id
+  const ifUserExist = await User.findById(userId);
+
+  if (!ifUserExist) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "User does not exist with this id"
+    );
+  }
+  const deletedUser = await User.findByIdAndUpdate(
+    userId,
+    { isDeleted: true },
+    { new: true }
+  ).select("-password");
+
+  return deletedUser;
 };
 
 export const userServices = {
   createUser,
   getAllUsers,
+  getMyProfile,
+  deleteUser,
   getSingleUser,
   updateUser,
 };

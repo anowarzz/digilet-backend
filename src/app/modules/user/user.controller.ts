@@ -52,6 +52,22 @@ const getSingleUser = catchAsync(
   }
 );
 
+// get user profile -> get me
+const getMyProfile = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const decodedToken = req.user as JwtPayload;
+
+    const user = await userServices.getMyProfile(decodedToken.userId);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Profile Retrieved Successfully",
+      data: user,
+    });
+  }
+);
+
 //  update a user
 const updateUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -74,9 +90,30 @@ const updateUser = catchAsync(
   }
 );
 
+
+// delete a user
+const deleteUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.id;
+
+  const deletedUser = await userServices.deleteUser(userId);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "User Deleted Successfully",
+      data: deletedUser,
+    });
+  }
+);
+
+
+
 export const userControllers = {
   createUser,
   getAllUsers,
   getSingleUser,
   updateUser,
+  deleteUser,
+  getMyProfile,
 };
