@@ -1,11 +1,19 @@
 import cors from "cors";
-import express, { Application, NextFunction, Request, Response } from "express";
+import express, { Application, Request, Response } from "express";
+import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
+import router from "./app/routes";
+import notFound from "./app/middlewares/notFound";
+import "./app/config/passport"
 
+// create app
 const app: Application = express();
 
-// Parser
+// Middlewares
 app.use(express.json());
 app.use(cors());
+
+// Router
+app.use("/api/v1", router);
 
 // Testing API HomeRoute
 const test = async (req: Request, res: Response) => {
@@ -18,12 +26,10 @@ const test = async (req: Request, res: Response) => {
 
 app.get("/", test);
 
-// route error handler
-app.use((req: Request, res: Response, next: NextFunction) => {
-    res.status(404).json({
-        success: false,
-        message: "Route not found",
-    });
-});
+// Global error handler
+app.use(globalErrorHandler);
+
+// not found route handler
+app.use(notFound);
 
 export default app;
