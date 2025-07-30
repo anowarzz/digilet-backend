@@ -1,36 +1,57 @@
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import { JwtPayload } from "jsonwebtoken";
 import { envVars } from "../config/env";
 import AppError from "../errorHelpers/appError";
-import { UserRole } from "../modules/user/user.interface";
+import { UserStatus } from "../modules/user/user.interface";
+import { User } from "../modules/user/user.model";
+import { verifyToken } from "../utils/jwt";
 
-export const checkAuth = (req: Request, res: Response, next: NextFunction) => {
-  const accessToken = req.headers.authorization;
+export const checkAuth =
+  (...authRoles: string[]) =>
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const accessToken = req.headers.authorization;
 
-  if (!accessToken) {
-    throw new AppError(httpStatus.FORBIDDEN, "No Access Token Found");
-  }
+      if (!accessToken) {
+        throw new AppError(403, "No Access Token Found");
+      }
 
-  const verifiedToken = jwt.verify(accessToken, envVars.JWT_ACCESS_SECRET);
+      const verifiedToken = verifyToken(
+        accessToken,
+        envVars.JWT_ACCESS_SECRET
+      ) as JwtPayload;
 
-  if (!verifiedToken) {
-    throw new AppError(
-      httpStatus.FORBIDDEN,
-      "You are not authorized",
-      verifiedToken
-    );
-  }
+      //  check if user exist with this email
+      const isUserExist = await User.findOne({
+        phone: verifiedToken.phone,
+      });
 
-  console.log("token", verifiedToken);
-  
+      if (!isUserExist) {
+        throw new AppError(httpStatus.BAD_REQUEST, "User Not Found");
+      }
 
-  if ((verifiedToken as JwtPayload).role !== UserRole.ADMIN) {
-    throw new AppError(
-      httpStatus.FORBIDDEN,
-      "You are not permitted to perform this action"
-    );
-  }
+      // user status check
+      if (
+        isUserExist.status === UserStatus.BLOCKED ||
+        isUserExist.status === UserStatus.SUSPENDED
+      ) {
+        throw new AppError(
+          httpStatus.FORBIDDEN,
+          `This user is is ${isUserExist.status}`
+        );
+      }
 
-  next();
-};
+      if (isUserExist.isDeleted) {
+        throw new AppError(httpStatus.FORBIDDEN, "This user is is Deleted");
+      }
+
+      if (!authRoles.includes(verifiedToken.role)) {
+        throw new AppError(403, "Unauthorized access");
+      }
+
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };

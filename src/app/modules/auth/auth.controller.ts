@@ -3,11 +3,11 @@
 
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
-import jwt, { SignOptions } from "jsonwebtoken";
 import passport from "passport";
 import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/appError";
 import { catchAsync } from "../../utils/catchAsync";
+import { generateToken } from "../../utils/jwt";
 import { sendResponse } from "../../utils/sendResponse";
 
 // user login with credentials
@@ -32,10 +32,10 @@ const credentialsLogin = catchAsync(
         role: user.role,
       };
 
-      const accessToken = jwt.sign(
+      const accessToken = generateToken(
         jwtPayload,
-        envVars.JWT_ACCESS_SECRET as string,
-        { expiresIn: envVars.JWT_ACCESS_EXPIRES } as SignOptions
+        envVars.JWT_ACCESS_SECRET,
+        envVars.JWT_ACCESS_EXPIRES
       );
 
       res.cookie("accessToken", accessToken, {
