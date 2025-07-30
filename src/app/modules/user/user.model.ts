@@ -16,7 +16,7 @@ const userSchema = new Schema<IUser>(
       required: [true, "Phone number is required"],
       unique: [true, "This phone number is already registered"],
     },
-    pin: { type: String, required: [true, "PIN is required"] },
+    password: { type: String, required: [true, "Password is required"] },
     name: { type: String, required: [true, "Name is required"] },
     email: { type: String , unique: true},
     userName: { type: String , unique: true},

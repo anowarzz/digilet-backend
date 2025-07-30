@@ -4,21 +4,24 @@ import { UserRole, UserStatus } from "./user.interface";
 // create user zod schema
 export const createUserZodSchema = z.object({
   phone: z
-    .string({ error: "Phone Number must be string" })
+    .string({ error: "Phone Number Is Required" })
     .regex(/^(?:\+8801\d{9}|01\d{9})$/, {
       message:
         "Phone number must be  Bangladeshi number. Format: +8801XXXXXXXXX or 01XXXXXXXXX",
     }),
 
-  pin: z
-    .string({ error: "PIN must be string" })
-    .min(1, "PIN is required")
-    .length(5, "PIN must be exactly 5 characters")  
-    .regex(/^\d+$/, "PIN must contain only numbers"),
+  password: z
+    .string({ error: "Password Is Required" })
+    .min(6, "Password must be at least of 6 character")
+    .max(20, "Password can not be more than 20 characters")
+    .regex(
+      /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{6,}$/,
+      "Password must be at least 6 characters long, include one uppercase letter and one special character."
+    ),
 
   name: z
-    .string({ error: "Name must be string" })
-    .min(3, "Name is required")
+    .string({ error: "Name Is Required" })
+    .min(3, "Name must be at least 3 characters")
     .max(25, "Name must be less than 25 characters"),
 
   email: z.email("Invalid email format").optional(),
@@ -52,23 +55,25 @@ export const createUserZodSchema = z.object({
 
 export const updateUserZodSchema = z.object({
   phone: z
-    .string({ error: "Phone Number must be string" })
+    .string({ error: "Phone Number Is Required" })
     .regex(/^(?:\+8801\d{9}|01\d{9})$/, {
       message:
         "Phone number must be  Bangladesh number. Format: +8801XXXXXXXXX or 01XXXXXXXXX",
     })
     .optional(),
 
-  pin: z
-    .string({ error: "PIN must be string" })
-    .min(1, "PIN is required")
-    .length(5, "PIN must be exactly 5 characters")
-    .regex(/^\d+$/, "PIN must contain only numbers")
-    .optional(),
+  password: z
+    .string({ error: "Password Is Required" })
+    .min(6, "Password must be at least of 6 character")
+    .max(20, "Password can not be more than 20 characters")
+    .regex(
+      /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{6,}$/,
+      "Password must be at least 6 characters long, include one uppercase letter and one special character."
+    ).optional(),
 
   name: z
-    .string({ error: "Name must be string" })
-    .min(3, "Name is required")
+    .string({ error: "Name Is Required" })
+    .min(3, "Name must be at least 3 characters")
     .max(25, "Name must be less than 25 characters")
     .optional(),
 

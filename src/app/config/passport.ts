@@ -10,9 +10,9 @@ passport.use(
   new localStrategy(
     {
       usernameField: "phone",
-      passwordField: "pin",
+      passwordField: "password",
     },
-    async (phone: string, pin: string, done) => {
+    async (phone: string, password: string, done) => {
       try {
         // check if use exist
         const isUserExist = await User.findOne({ phone });
@@ -21,13 +21,13 @@ passport.use(
           return done(null, false, { message: "User does not exist" });
         }
 
-        // check pin match
-        const isPinMatched = await bcryptjs.compare(
-          pin as string,
-          isUserExist.pin as string
+        // check password match
+        const isPasswordMatched = await bcryptjs.compare(
+          password as string,
+          isUserExist.password as string
         );
-        if (!isPinMatched) {
-          return done(null, false, { message: "Incorrect Pin Provided" });
+        if (!isPasswordMatched) {
+          return done(null, false, { message: "Incorrect Password Provided" });
         }
 
         return done(null, isUserExist);

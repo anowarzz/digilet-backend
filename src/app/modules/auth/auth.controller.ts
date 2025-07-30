@@ -22,7 +22,7 @@ const credentialsLogin = catchAsync(
         return next(new AppError(401, info.message));
       }
 
-      const { pin, ...rest } = user.toObject();
+      const { password: pass, ...rest } = user.toObject();
 
       // generate JWT tokens
 

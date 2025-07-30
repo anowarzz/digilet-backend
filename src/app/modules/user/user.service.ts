@@ -5,7 +5,7 @@ import { IAuthProvider, IUser } from "./user.interface";
 import { User } from "./user.model";
 
 const createUser = async (payload: Partial<IUser>) => {
-  const { phone, pin, role, ...userData } = payload;
+  const { phone, password, role, ...userData } = payload;
 
   const isUserExist = await User.findOne({ phone });
 
@@ -13,8 +13,8 @@ const createUser = async (payload: Partial<IUser>) => {
     throw new Error("user alreay exist with this phone number");
   }
 
-  const hashedPin = await bcryptjs.hash(
-    pin as string,
+  const hashedPassword = await bcryptjs.hash(
+    password as string,
     Number(envVars.BCRYPT_SALT_ROUNDS)
   );
 
@@ -27,14 +27,14 @@ const createUser = async (payload: Partial<IUser>) => {
 
   const user = await User.create({
     phone,
-    pin: hashedPin,
+    password: hashedPassword,
     role,
     status,
     auths: [authProvider],
     ...userData,
   });
 
-  const { pin: pass, ...rest } = user.toObject();
+  const { password: pass, ...rest } = user.toObject();
 
   return rest;
 };
