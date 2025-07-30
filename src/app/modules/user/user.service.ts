@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import bcryptjs from "bcryptjs";
 import { envVars } from "../../config/env";
 import { IAuthProvider, IUser } from "./user.interface";
 import { User } from "./user.model";
 
 const createUser = async (payload: Partial<IUser>) => {
-  const { phone, pin, role, ...rest } = payload;
+  const { phone, pin, role, ...userData } = payload;
 
   const isUserExist = await User.findOne({ phone });
 
@@ -30,10 +31,12 @@ const createUser = async (payload: Partial<IUser>) => {
     role,
     status,
     auths: [authProvider],
-    ...rest,
+    ...userData,
   });
 
-  return user;
+  const { pin: pass, ...rest } = user.toObject();
+
+  return rest;
 };
 
 export const userServices = {
