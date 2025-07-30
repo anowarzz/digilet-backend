@@ -1,6 +1,8 @@
+import httpStatus from "http-status-codes";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import bcryptjs from "bcryptjs";
 import { envVars } from "../../config/env";
+import AppError from "../../errorHelpers/appError";
 import { IAuthProvider, IUser } from "./user.interface";
 import { User } from "./user.model";
 
@@ -53,7 +55,21 @@ const getAllUsers = async () => {
   };
 };
 
+// get single user
+const getSingleUser = async (userId: string) => {
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+  }
+
+  const { password: pass, ...rest } = user.toObject();
+
+  return rest;
+};
+
 export const userServices = {
   createUser,
   getAllUsers,
+  getSingleUser,
 };

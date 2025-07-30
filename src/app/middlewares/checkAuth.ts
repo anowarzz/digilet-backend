@@ -28,7 +28,7 @@ export const checkAuth =
       });
 
       if (!isUserExist) {
-        throw new AppError(httpStatus.BAD_REQUEST, "User Not Found");
+        throw new AppError(httpStatus.BAD_REQUEST, "No Logged In User Found");
       }
 
       // user status check
