@@ -1,11 +1,10 @@
-import { userServices } from "./user.service";
 /* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
 import { JwtPayload } from "jsonwebtoken";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
+import { userServices } from "./user.service";
 
 // create user
 const createUser = catchAsync(
@@ -18,21 +17,6 @@ const createUser = catchAsync(
       success: true,
       message: "User Created Successfully",
       data: user,
-    });
-  }
-);
-
-// get all users
-const getAllUsers = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const users = await userServices.getAllUsers();
-
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: "Users Retrieved Successfully",
-      meta: users.meta,
-      data: users.data,
     });
   }
 );
@@ -90,30 +74,9 @@ const updateUser = catchAsync(
   }
 );
 
-
-// delete a user
-const deleteUser = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.params.id;
-
-  const deletedUser = await userServices.deleteUser(userId);
-
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: "User Deleted Successfully",
-      data: deletedUser,
-    });
-  }
-);
-
-
-
 export const userControllers = {
   createUser,
-  getAllUsers,
   getSingleUser,
   updateUser,
-  deleteUser,
   getMyProfile,
 };
