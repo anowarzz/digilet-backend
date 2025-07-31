@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response } from "express";
 import { JwtPayload } from "jsonwebtoken";
 import { catchAsync } from "../../utils/catchAsync";
@@ -93,9 +91,33 @@ const cashOut = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+/*/  Get transaction history for user and agent  /*/
 const getTransactionHistory = catchAsync(
-  async (req: Request, res: Response) => {}
+  async (req: Request, res: Response) => {
+    const user = req.user as JwtPayload;
+
+    const result = await transactionServices.getTransactionHistory(
+      user?.userId
+    );
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Transaction History Retrieved Successfully",
+      data: result,
+    });
+  }
 );
+
+/*/ Get all transactions for admin /*/
+const getAllTransactions = catchAsync(async (req: Request, res: Response) => {
+  const result = await transactionServices.getAllTransactions();
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "All Transactions Retrieved Successfully",
+    data: result,
+  });
+});
 
 export const transactionControllers = {
   addMoney,
@@ -104,4 +126,5 @@ export const transactionControllers = {
   cashIn,
   cashOut,
   getTransactionHistory,
+  getAllTransactions,
 };
