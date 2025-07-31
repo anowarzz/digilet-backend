@@ -46,7 +46,6 @@ const withdrawMoney = catchAsync(async (req: Request, res: Response) => {
 const sendMoney = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as JwtPayload;
 
-
   const sendMoneyPayload = req.body;
 
   const result = await transactionServices.sendMoney(
@@ -61,8 +60,38 @@ const sendMoney = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const cashIn = catchAsync(async (req: Request, res: Response) => {});
-const cashOut = catchAsync(async (req: Request, res: Response) => {});
+// CASH_IN: agent adds money to user wallet
+const cashIn = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as JwtPayload;
+
+  const cashInPayload = req.body;
+
+  const result = await transactionServices.cashIn(cashInPayload, user?.userId);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Cash In Transaction Successful",
+    data: result,
+  });
+});
+
+// CASH_OUT: agent withdraws money from user wallet
+const cashOut = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as JwtPayload;
+
+  const cashOutPayload = req.body;
+
+  const result = await transactionServices.cashOut(
+    cashOutPayload,
+    user?.userId
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Cash Out Transaction Successful",
+    data: result,
+  });
+});
 
 const getTransactionHistory = catchAsync(
   async (req: Request, res: Response) => {}

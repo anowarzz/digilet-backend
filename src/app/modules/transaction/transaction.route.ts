@@ -38,15 +38,17 @@ router.post(
 router.post(
   "/cash-in",
   validateRequest(cashInTransactionZodSchema),
+  checkAuth(UserRole.AGENT),
   transactionControllers.cashIn
 );
 router.post(
   "/cash-out",
   validateRequest(cashOutTransactionZodSchema),
+  checkAuth(UserRole.AGENT),
   transactionControllers.cashOut
 );
 
 // transaction history
-router.get("/history", transactionControllers.getTransactionHistory);
+router.get("/all-transactions", transactionControllers.getTransactionHistory);
 
 export const TransactionRoutes = router;
