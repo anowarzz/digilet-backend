@@ -8,7 +8,6 @@ const router = Router();
 
 router.get("/all", checkAuth(UserRole.ADMIN), walletControllers.getAllWallets);
 
-
 router.get(
   "/me",
   checkAuth(...Object.values(UserRole)),
