@@ -17,12 +17,14 @@ const router = Router();
 router.post(
   "/add-money",
   validateRequest(addMoneyTransactionZodSchema),
-  checkAuth(...Object.values(UserRole)),
+  checkAuth(UserRole.USER, UserRole.AGENT),
   transactionControllers.addMoney
 );
+
 router.post(
   "/withdraw",
   validateRequest(withdrawTransactionZodSchema),
+  checkAuth(UserRole.USER, UserRole.AGENT),
   transactionControllers.withdrawMoney
 );
 router.post(
