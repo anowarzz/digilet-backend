@@ -38,12 +38,12 @@ export const checkAuth =
       ) {
         throw new AppError(
           httpStatus.FORBIDDEN,
-          `This user is is ${isUserExist.status}`
+          `This user is ${isUserExist.status}`
         );
       }
 
       if (isUserExist.isDeleted) {
-        throw new AppError(httpStatus.FORBIDDEN, "This user is is Deleted");
+        throw new AppError(httpStatus.FORBIDDEN, "This user account is is Deleted");
       }
 
       if (!authRoles.includes(verifiedToken.role)) {

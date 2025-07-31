@@ -8,6 +8,8 @@ import {
   sendMoneyTransactionZodSchema,
   withdrawTransactionZodSchema,
 } from "./transaction.validation";
+import { checkAuth } from "../../middlewares/checkAuth";
+import { UserRole } from "../user/user.interface";
 
 const router = Router();
 
@@ -15,6 +17,7 @@ const router = Router();
 router.post(
   "/add-money",
   validateRequest(addMoneyTransactionZodSchema),
+  checkAuth(...Object.values(UserRole)),
   transactionControllers.addMoney
 );
 router.post(

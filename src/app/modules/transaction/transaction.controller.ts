@@ -1,12 +1,29 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response } from "express";
+import { JwtPayload } from "jsonwebtoken";
 import { catchAsync } from "../../utils/catchAsync";
+import { sendResponse } from "../../utils/sendResponse";
+import { transactionServices } from "./transaction.service";
 
 const addMoney = catchAsync(async (req: Request, res: Response) => {
-    const data = req.body;
-console.log(data);
-res.send("Okk")
+  const user = req.user as JwtPayload;
 
-    // Your logic here...
+  const addMoneypayload = req.body;
+
+ 
+  
+
+  const result = await transactionServices.addMoney(
+    addMoneypayload,
+    user.userId
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Add Money Transaction Successful",
+    data: result,
+  });
 });
 
 const withdrawMoney = catchAsync(async (req: Request, res: Response) => {});
