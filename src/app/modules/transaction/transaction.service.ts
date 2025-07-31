@@ -292,7 +292,155 @@ const withdrawMoney = async (
 
 
 
+// ----------------------------------------------------- //
+
+/*/  SEND MONEY -> User sends money from own wallet to another user's wallet /*/
+const sendMoney = async (payload: ISendMoneyPayload, userId: string) => {
+  const { receiverPhone, amount, description = "" } = payload;
+
+  const session = await Wallet.startSession();
+  session.startTransaction();
+
+  try {
+    const senderUser = await User.findById(userId).session(session);
+
+    if (
+      senderUser?.status === UserStatus.BLOCKED ||
+      senderUser?.status === UserStatus.SUSPENDED
+    ) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        `This user account is ${senderUser?.status}`
+      );
+    }
+
+    if (!receiverPhone || !amount) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Receiver phone number and amount are required"
+      );
+    }
+console.log(userId);
+
+    const senderWallet = await Wallet.findOne({ userId: userId }).session(
+      session
+    );
+
+    if (!senderWallet) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Sender wallet not found");
+    }
+
+    if (senderWallet.isBlocked) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "Sender wallet is blocked, can't do this transaction"
+      );
+    }
+
+    const receiverUser = await User.findOne({ phone: receiverPhone }).session(
+      session
+    );
+
+    if (!receiverUser) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Receiver not found with the given phone number"
+      );
+    }
+
+    // Check if sender is trying to send money to themselves
+    if (
+      senderUser &&
+      senderUser._id.toString() === receiverUser._id.toString()
+    ) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Cannot send money to yourself"
+      );
+    }
+
+    if (
+      receiverUser.status === UserStatus.BLOCKED ||
+      receiverUser.status === UserStatus.SUSPENDED
+    ) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        `Receiver account is ${receiverUser.status}`
+      );
+    }
+
+    const receiverWallet = await Wallet.findOne({
+      userId: receiverUser._id,
+    }).session(session);
+
+    if (!receiverWallet) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Receiver wallet not found");
+    }
+
+    if (receiverWallet.isBlocked) {
+      throw new AppError(httpStatus.FORBIDDEN, "Receiver wallet is blocked");
+    }
+
+    // Validate sender's wallet balance
+    const sendAmount = Number(amount);
+
+    if (senderWallet.balance < sendAmount) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        `Sender wallet does not have enough balance. Current balance is ${senderWallet.balance}`
+      );
+    }
+
+    // deduct amount from sender wallet
+    const updatedSenderWallet = await Wallet.findByIdAndUpdate(
+      senderWallet._id,
+      { $inc: { balance: -sendAmount } },
+      { session, new: true }
+    );
+
+    // add amount to receiver wallet
+    const updatedReceiverWallet = await Wallet.findByIdAndUpdate(
+      receiverWallet._id,
+      { $inc: { balance: sendAmount } },
+      { session, new: true }
+    );
+
+    // transaction payloads
+    const transactionPayload: ITransaction = {
+      transactionType: TransactionType.SEND_MONEY,
+      transactionId: getTransactionId(),
+      initiatedBy: new Types.ObjectId(userId),
+      fromWallet: senderWallet._id,
+      toWallet: receiverWallet._id,
+      amount: sendAmount,
+      status: TransactionStatus.COMPLETED,
+      description,
+    };
+
+    // Create a transaction record
+    const transaction = new Transaction(transactionPayload);
+
+    await transaction.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return {
+      senderWallet: updatedSenderWallet,
+      receiverWallet: updatedReceiverWallet,
+      transaction,
+    };
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error("Error while sendMoney transaction:", error);
+    throw error;
+  }
+};
+
+
 export const transactionServices = {
   addMoney,
   withdrawMoney,
+  sendMoney,
 };

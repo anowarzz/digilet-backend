@@ -1,5 +1,7 @@
 import { Router } from "express";
+import { checkAuth } from "../../middlewares/checkAuth";
 import { validateRequest } from "../../middlewares/validateRequest";
+import { UserRole } from "../user/user.interface";
 import { transactionControllers } from "./transaction.controller";
 import {
   addMoneyTransactionZodSchema,
@@ -8,12 +10,10 @@ import {
   sendMoneyTransactionZodSchema,
   withdrawTransactionZodSchema,
 } from "./transaction.validation";
-import { checkAuth } from "../../middlewares/checkAuth";
-import { UserRole } from "../user/user.interface";
 
 const router = Router();
 
-//  user actions route
+//  user, agent actions route
 router.post(
   "/add-money",
   validateRequest(addMoneyTransactionZodSchema),
@@ -30,6 +30,7 @@ router.post(
 router.post(
   "/send-money",
   validateRequest(sendMoneyTransactionZodSchema),
+  checkAuth(UserRole.USER, UserRole.AGENT),
   transactionControllers.sendMoney
 );
 

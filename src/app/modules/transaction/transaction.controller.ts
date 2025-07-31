@@ -30,8 +30,6 @@ const withdrawMoney = catchAsync(async (req: Request, res: Response) => {
 
   const withdrawPayload = req.body;
 
-  console.log(withdrawPayload);
-
   const result = await transactionServices.withdrawMoney(
     withdrawPayload,
     user.userId
@@ -44,7 +42,24 @@ const withdrawMoney = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const sendMoney = catchAsync(async (req: Request, res: Response) => {});
+// SEND_MONEY: user sends money to another user
+const sendMoney = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as JwtPayload;
+
+
+  const sendMoneyPayload = req.body;
+
+  const result = await transactionServices.sendMoney(
+    sendMoneyPayload,
+    user?.userId
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Send Money Transaction Successful",
+    data: result,
+  });
+});
 
 const cashIn = catchAsync(async (req: Request, res: Response) => {});
 const cashOut = catchAsync(async (req: Request, res: Response) => {});
