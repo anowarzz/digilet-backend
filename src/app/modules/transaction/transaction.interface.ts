@@ -21,8 +21,8 @@ export interface ITransaction {
   transactionType: TransactionType;
   transactionId: string;
   initiatedBy: Types.ObjectId;
-  senderWallet: string;
-  receiverWallet: string;
+  fromWallet: Types.ObjectId;
+  toWallet: Types.ObjectId;
   status: TransactionStatus;
   amount: number;
   fee?: number;

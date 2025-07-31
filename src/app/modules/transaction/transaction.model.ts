@@ -21,12 +21,14 @@ export const transactionSchema = new Schema<ITransaction>(
       ref: "User",
       required: true,
     },
-    senderWallet: {
-      type: String,
+    fromWallet: {
+      type: Schema.Types.ObjectId,
+      ref: "Wallet",
       required: true,
     },
-    receiverWallet: {
-      type: String,
+    toWallet: {
+      type: Schema.Types.ObjectId,
+      ref: "Wallet",
       required: true,
     },
     status: {
