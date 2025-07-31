@@ -23,6 +23,7 @@ const userSchema = new Schema<IUser>(
     auths: [authProviderSchema],
     role: {
       type: String,
+      set: (v: string) => v?.toUpperCase(),
       enum: Object.values(UserRole),
       default: UserRole.USER,
     },
