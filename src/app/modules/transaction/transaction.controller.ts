@@ -11,9 +11,6 @@ const addMoney = catchAsync(async (req: Request, res: Response) => {
 
   const addMoneypayload = req.body;
 
- 
-  
-
   const result = await transactionServices.addMoney(
     addMoneypayload,
     user.userId

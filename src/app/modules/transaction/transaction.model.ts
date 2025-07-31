@@ -39,6 +39,7 @@ export const transactionSchema = new Schema<ITransaction>(
     amount: {
       type: Number,
       required: true,
+      min: [1, "Amount must be more than 0"],
     },
     fee: {
       type: Number,
