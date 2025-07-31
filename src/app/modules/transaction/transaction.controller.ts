@@ -1,7 +1,13 @@
 import { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 
-const addMoney = catchAsync(async (req: Request, res: Response) => {});
+const addMoney = catchAsync(async (req: Request, res: Response) => {
+    const data = req.body;
+console.log(data);
+res.send("Okk")
+
+    // Your logic here...
+});
 
 const withdrawMoney = catchAsync(async (req: Request, res: Response) => {});
 const sendMoney = catchAsync(async (req: Request, res: Response) => {});
