@@ -49,6 +49,10 @@ router.post(
 );
 
 // transaction history
-router.get("/all-transactions", transactionControllers.getTransactionHistory);
+router.get(
+  "/history",
+  checkAuth(UserRole.USER, UserRole.AGENT),
+  transactionControllers.getTransactionHistory
+);
 
 export const TransactionRoutes = router;

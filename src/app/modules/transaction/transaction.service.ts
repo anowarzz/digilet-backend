@@ -338,7 +338,6 @@ const sendMoney = async (payload: ISendMoneyPayload, userId: string) => {
         "Receiver phone number and amount are required"
       );
     }
-    console.log(userId);
 
     const senderWallet = await Wallet.findOne({ userId: userId }).session(
       session
@@ -491,14 +490,12 @@ const cashIn = async (payload: ICashInPayload, userId: string) => {
       );
     }
 
-    // if (cashInAgent.status === UserStatus.PENDING) {
-    //   throw new AppError(
-    //     httpStatus.FORBIDDEN,
-    //     "This agent account is pending for approval, can't do this transaction now, please wait for approval"
-    //   );
-    // }
-
-    console.log(userId);
+    if (cashInAgent.status === UserStatus.PENDING) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "This agent account is pending for approval, can't do this transaction now, please wait for approval"
+      );
+    }
 
     const cashInAgentWallet = await Wallet.findOne({ userId: userId }).session(
       session
@@ -521,6 +518,9 @@ const cashIn = async (payload: ICashInPayload, userId: string) => {
     const receiverUser = await User.findOne({ phone: userPhone }).session(
       session
     );
+
+    console.log("Receiver User:", receiverUser);
+    
 
     if (!receiverUser) {
       throw new AppError(
@@ -654,14 +654,12 @@ const cashOut = async (payload: ICashOutPayload, userId: string) => {
       );
     }
 
-    // if (cashOutAgent.status === UserStatus.PENDING) {
-    //   throw new AppError(
-    //     httpStatus.FORBIDDEN,
-    //     "This agent account is pending for approval, can't do this transaction now, please wait for approval"
-    //   );
-    // }
-
-    console.log(userId);
+    if (cashOutAgent.status === UserStatus.PENDING) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "This agent account is pending for approval, can't do this transaction now, please wait for approval"
+      );
+    }
 
     const cashOutAgentWallet = await Wallet.findOne({ userId: userId }).session(
       session
@@ -785,10 +783,62 @@ const cashOut = async (payload: ICashOutPayload, userId: string) => {
   }
 };
 
+// ----------------------------------------------------- //
+
+/*/ Get transaction history for a user or agent /*/
+const getTransactionHistory = async (userId: string, page = 1, limit = 20) => {
+  const skip = (page - 1) * limit;
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  if (
+    user.status === UserStatus.BLOCKED ||
+    user.status === UserStatus.SUSPENDED
+  ) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      `This user account is ${user.status}`
+    );
+  }
+
+  const userWallet = await Wallet.findOne({ userId });
+  if (!userWallet) {
+    throw new AppError(httpStatus.NOT_FOUND, "User wallet not found");
+  }
+
+  const query = {
+    $or: [{ fromWallet: userWallet._id }, { toWallet: userWallet._id }],
+  };
+
+  const transactions = await Transaction.find(query)
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  const totalTransactions = await Transaction.countDocuments(query);
+
+  const totalPages = Math.ceil(totalTransactions / limit);
+
+  return {
+    meta: {
+      totalTransactions,
+      currentPage: page,
+      totalPages,
+      limit,
+    },
+    transactions,
+  };
+};
+
 export const transactionServices = {
   addMoney,
   sendMoney,
   withdrawMoney,
   cashIn,
+  getTransactionHistory,
   cashOut,
 };

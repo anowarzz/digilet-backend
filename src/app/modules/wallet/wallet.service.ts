@@ -12,19 +12,6 @@ const getMyWallet = async (userId: string) => {
   return wallet;
 };
 
-
-
-
-// get all wallets  --> ADMIN ONLY
-const getAllWallets = async () => {
-  const wallets = await Wallet.find({});
-  if (!wallets || wallets.length === 0) {
-    throw new AppError(httpStatus.NOT_FOUND, "No Wallets Found");
-  }
-  return wallets;
-};
-
 export const WalletService = {
   getMyWallet,
-  getAllWallets,
 };

@@ -51,13 +51,9 @@ const createUser = async (payload: Partial<IUser>) => {
 
     // create wallet for user & agent automatically
 
-
-    
-
-
     if (role === UserRole.AGENT || role === UserRole.USER) {
       const walletPayload: Partial<IWallet> = {
-        userId: new Types.ObjectId(user._id), 
+        userId: new Types.ObjectId(user._id),
         balance: Number(envVars.INITIAL_WALLET_BALANCE),
         walletId: getWalletId(name),
       };
@@ -82,30 +78,7 @@ const createUser = async (payload: Partial<IUser>) => {
   }
 };
 
-/*/ get all users /*/
-const getAllUsers = async () => {
-  const users = await User.find({ isDeleted: false }).select("-password");
 
-  const totalUsers = await User.countDocuments({ isDeleted: false });
-
-  return {
-    data: users,
-    meta: {
-      total: totalUsers,
-    },
-  };
-};
-
-/*/ get single user  /*/
-const getSingleUser = async (userId: string) => {
-  const user = await User.findById(userId).select("-password");
-
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
-  }
-
-  return user;
-};
 
 /*/ get user profile -> get me  /*/
 const getMyProfile = async (userId: string) => {
@@ -177,31 +150,8 @@ const updateUser = async (
   return updatedUser;
 };
 
-/*/  delete a user /*/
-const deleteUser = async (userId: string) => {
-  // check if user exist with this id
-  const ifUserExist = await User.findById(userId);
-
-  if (!ifUserExist) {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      "User does not exist with this id"
-    );
-  }
-  const deletedUser = await User.findByIdAndUpdate(
-    userId,
-    { isDeleted: true },
-    { new: true }
-  ).select("-password");
-
-  return deletedUser;
-};
-
 export const userServices = {
   createUser,
-  getAllUsers,
   getMyProfile,
-  deleteUser,
-  getSingleUser,
   updateUser,
 };

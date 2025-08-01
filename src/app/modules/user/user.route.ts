@@ -1,4 +1,3 @@
-import { User } from './user.model';
 import { Router } from "express";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { validateRequest } from "../../middlewares/validateRequest";
@@ -15,14 +14,6 @@ router.post(
   userControllers.createUser
 );
 
-// get all users
-router.get(
-  "/all-users",
-  checkAuth(UserRole.ADMIN),
-  userControllers.getAllUsers
-);
-
-
 // get user profile - get me
 router.get(
   "/me",
@@ -31,20 +22,7 @@ router.get(
 );
 
 
-// delete a user 
-router.delete(
-  "/:id",
-  checkAuth(UserRole.USER, UserRole.AGENT, UserRole.ADMIN),
-  userControllers.deleteUser
-);
 
-
-// get single user
-router.get(
-  "/:id",
-  checkAuth(...Object.values(UserRole)),
-  userControllers.getSingleUser
-);
 
 // update a user
 router.patch(

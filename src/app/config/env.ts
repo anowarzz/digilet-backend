@@ -14,6 +14,9 @@ interface EnvConfig {
   BCRYPT_SALT_ROUNDS: string;
   FRONTEND_URL?: string;
   INITIAL_WALLET_BALANCE?: string;
+  SUPER_ADMIN_PHONE?: string;
+  SUPER_ADMIN_EMAIL?: string;
+  SUPER_ADMIN_PASSWORD?: string;
 }
 
 const loadEnvVariables = (): EnvConfig => {
@@ -28,6 +31,9 @@ const loadEnvVariables = (): EnvConfig => {
     "BCRYPT_SALT_ROUNDS",
     "FRONTEND_URL",
     "INITIAL_WALLET_BALANCE",
+    "SUPER_ADMIN_PHONE",
+    "SUPER_ADMIN_EMAIL",
+    "SUPER_ADMIN_PASSWORD",
   ];
 
   requiredEnvVariables.forEach((key) => {
@@ -47,6 +53,9 @@ const loadEnvVariables = (): EnvConfig => {
     BCRYPT_SALT_ROUNDS: process.env.BCRYPT_SALT_ROUNDS as string,
     FRONTEND_URL: process.env.FRONTEND_URL as string,
     INITIAL_WALLET_BALANCE: process.env.INITIAL_WALLET_BALANCE as string,
+    SUPER_ADMIN_PHONE: process.env.SUPER_ADMIN_PHONE as string,
+    SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL as string,
+    SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD as string,
   };
 };
 

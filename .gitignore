@@ -37,3 +37,4 @@ coverage/
 *.tgz
 *.swp
 *.swo
+.vercel
