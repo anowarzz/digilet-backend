@@ -100,6 +100,13 @@ const blockUserWallet = async (userId: string) => {
       );
     }
 
+    if (user.isDeleted) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "This user is already deleted"
+      );
+    }
+
     // Set user status to BLOCKED and block their wallet
     const blockedUser = await User.findByIdAndUpdate(
       user._id,
@@ -145,6 +152,13 @@ const unblockUserWallet = async (userId: string) => {
       );
     }
 
+    if (user.isDeleted) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "This user is already deleted"
+      );
+    }
+
     // Set user status to ACTIVE and unblock their wallet
     const unblockedUser = await User.findByIdAndUpdate(
       user._id,
@@ -187,6 +201,13 @@ const approveAgent = async (agentId: string) => {
       throw new AppError(
         httpStatus.FORBIDDEN,
         "This action is only for agents."
+      );
+    }
+
+    if (agent.isDeleted) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "This Agent is already deleted"
       );
     }
 

@@ -490,12 +490,12 @@ const cashIn = async (payload: ICashInPayload, userId: string) => {
       );
     }
 
-    // if (cashInAgent.status === UserStatus.PENDING) {
-    //   throw new AppError(
-    //     httpStatus.FORBIDDEN,
-    //     "This agent account is pending for approval, can't do this transaction now, please wait for approval"
-    //   );
-    // }
+    if (cashInAgent.status === UserStatus.PENDING) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "This agent account is pending for approval, can't do this transaction now, please wait for approval"
+      );
+    }
 
     const cashInAgentWallet = await Wallet.findOne({ userId: userId }).session(
       session
@@ -518,6 +518,9 @@ const cashIn = async (payload: ICashInPayload, userId: string) => {
     const receiverUser = await User.findOne({ phone: userPhone }).session(
       session
     );
+
+    console.log("Receiver User:", receiverUser);
+    
 
     if (!receiverUser) {
       throw new AppError(
@@ -651,12 +654,12 @@ const cashOut = async (payload: ICashOutPayload, userId: string) => {
       );
     }
 
-    // if (cashOutAgent.status === UserStatus.PENDING) {
-    //   throw new AppError(
-    //     httpStatus.FORBIDDEN,
-    //     "This agent account is pending for approval, can't do this transaction now, please wait for approval"
-    //   );
-    // }
+    if (cashOutAgent.status === UserStatus.PENDING) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "This agent account is pending for approval, can't do this transaction now, please wait for approval"
+      );
+    }
 
     const cashOutAgentWallet = await Wallet.findOne({ userId: userId }).session(
       session
@@ -830,8 +833,6 @@ const getTransactionHistory = async (userId: string, page = 1, limit = 20) => {
     transactions,
   };
 };
-
-
 
 export const transactionServices = {
   addMoney,
