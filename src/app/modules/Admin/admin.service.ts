@@ -1,9 +1,9 @@
 import httpStatus from "http-status-codes";
 import AppError from "../../errorHelpers/appError";
+import { Transaction } from "../transaction/transaction.model";
 import { UserRole, UserStatus } from "../user/user.interface";
 import { User } from "../user/user.model";
 import { Wallet } from "../wallet/wallet.model";
-import { Transaction } from "../transaction/transaction.model";
 
 /*/ get all users /*/
 const getAllUsers = async () => {
@@ -261,6 +261,15 @@ const suspendAgent = async (agentId: string) => {
   }
 };
 
+// -----------------------------------//
+/*/ Get all wallets /*/
+const getAllWallets = async () => {
+  const wallets = await Wallet.find({});
+  if (!wallets || wallets.length === 0) {
+    throw new AppError(httpStatus.NOT_FOUND, "No Wallets Found");
+  }
+  return wallets;
+};
 
 // ----------------------------------------------------- //
 /*/ Get All Transactions --> For Admin /*/
@@ -287,7 +296,6 @@ const getAllTransactions = async (page = 1, limit = 20) => {
   };
 };
 
-
 export const adminServices = {
   getAllUsers,
   getSingleUser,
@@ -296,5 +304,6 @@ export const adminServices = {
   unblockUserWallet,
   approveAgent,
   suspendAgent,
+  getAllWallets,
   getAllTransactions,
 };

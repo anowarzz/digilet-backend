@@ -19,6 +19,15 @@ router.get(
   adminControllers.getAllTransactions
 );
 
+// get all wallets
+router.get(
+  "/wallets/all",
+  checkAuth(UserRole.ADMIN),
+  adminControllers.getAllWallets
+);
+
+
+
 // get single user by id
 router.get(
   "/users/:userId",

@@ -20,9 +20,9 @@ const getAllUsers = catchAsync(
   }
 );
 
-// -----------------------------------//
+// -----------------------------------
 
-// get single user  //
+// get single user
 const getSingleUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.id;
@@ -37,9 +37,9 @@ const getSingleUser = catchAsync(
   }
 );
 
-// -----------------------------------//
+// -----------------------------------
 
-// delete a user  //
+// delete a user
 const deleteUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.id;
@@ -55,8 +55,20 @@ const deleteUser = catchAsync(
   }
 );
 
-// -----------------------------------//
-// block user wallet  //
+// -----------------------------------
+// get all wallets
+const getAllWallets = catchAsync(async (req: Request, res: Response) => {
+  const wallets = await adminServices.getAllWallets();
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "All wallets retrieved",
+    data: wallets,
+  });
+});
+
+// -----------------------------------
+// block user wallet
 const blockUserWallet = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.userId;
@@ -72,8 +84,8 @@ const blockUserWallet = catchAsync(
   }
 );
 
-// -----------------------------------//
-// unblock user wallet  //
+// -----------------------------------
+// unblock user wallet
 const unblockUserWallet = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.userId;
@@ -89,8 +101,8 @@ const unblockUserWallet = catchAsync(
   }
 );
 
-// -----------------------------------//
-// approve agent //
+// -----------------------------------
+// approve agent
 const approveAgent = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const agentId = req.params.agentId;
@@ -106,8 +118,8 @@ const approveAgent = catchAsync(
   }
 );
 
-// -----------------------------------//
-// suspend agent //
+// ---------------------------------
+// suspend agent
 
 const suspendAgent = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -124,8 +136,8 @@ const suspendAgent = catchAsync(
   }
 );
 
-// -----------------------------------//
-// Get all transactions for admin //
+// -----------------------------------
+// Get all transactions for admin
 const getAllTransactions = catchAsync(async (req: Request, res: Response) => {
   const result = await adminServices.getAllTransactions();
   sendResponse(res, {
@@ -145,4 +157,5 @@ export const adminControllers = {
   approveAgent,
   suspendAgent,
   getAllTransactions,
+  getAllWallets,
 };

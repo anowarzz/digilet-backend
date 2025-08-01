@@ -55,6 +55,4 @@ router.get(
   transactionControllers.getTransactionHistory
 );
 
-
-
 export const TransactionRoutes = router;
