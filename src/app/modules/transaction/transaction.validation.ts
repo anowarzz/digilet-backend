@@ -27,7 +27,7 @@ export const addMoneyTransactionZodSchema = z.object({
 
   amount: z
     .number("amount - Add Money Amount Is Required")
-    .min(0, "Amount must be a positive number"),
+    .min(1, "Amount must be more than 0"),
   description: z.string().optional(),
 });
 
@@ -45,7 +45,7 @@ export const withdrawTransactionZodSchema = z.object({
     }),
   amount: z
     .number("amount - Withdraw Amount Is Required")
-    .min(0, "Amount must be a positive number"),
+    .min(1, "Amount must be more than 0"),
   description: z.string().optional(),
 });
 
@@ -64,7 +64,7 @@ export const sendMoneyTransactionZodSchema = z.object({
     }),
   amount: z
     .number("amount - Send Money Amount Is Required")
-    .min(1, "Amount must be a positive number"),
+    .min(1, "Amount must be more than 0"),
   description: z.string().optional(),
 });
 
@@ -82,7 +82,7 @@ export const cashInTransactionZodSchema = z.object({
     }),
   amount: z
     .number("amount - Cash In Amount Is Required")
-    .min(0, "Amount must be more than 0"),
+    .min(1, "Amount must be more than 0"),
   description: z.string().optional(),
 });
 
@@ -99,6 +99,6 @@ export const cashOutTransactionZodSchema = z.object({
     }),
   amount: z
     .number("amount - Cash Out Amount Is Required")
-    .min(0, "Amount must be a positive number"),
+    .min(1, "Amount must be more than 0"),
   description: z.string().optional(),
 });
