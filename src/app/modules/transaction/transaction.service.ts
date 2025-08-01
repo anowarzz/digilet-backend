@@ -831,30 +831,7 @@ const getTransactionHistory = async (userId: string, page = 1, limit = 20) => {
   };
 };
 
-// ----------------------------------------------------- //
-/*/ Get All Transcations --> For Admin /*/
-const getAllTransactions = async (page = 1, limit = 20) => {
-  const skip = (page - 1) * limit;
 
-  const transactions = await Transaction.find()
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limit);
-
-  const totalTransactions = await Transaction.countDocuments();
-
-  const totalPages = Math.ceil(totalTransactions / limit);
-
-  return {
-    meta: {
-      totalTransactions,
-      currentPage: page,
-      totalPages,
-      limit,
-    },
-    transactions,
-  };
-};
 
 export const transactionServices = {
   addMoney,
@@ -862,6 +839,5 @@ export const transactionServices = {
   withdrawMoney,
   cashIn,
   getTransactionHistory,
-  getAllTransactions,
   cashOut,
 };

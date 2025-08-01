@@ -55,11 +55,6 @@ router.get(
   transactionControllers.getTransactionHistory
 );
 
-// get all transactions
-router.get(
-  "/all",
-  checkAuth(UserRole.ADMIN),
-  transactionControllers.getAllTransactions
-);
+
 
 export const TransactionRoutes = router;

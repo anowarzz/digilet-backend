@@ -108,16 +108,7 @@ const getTransactionHistory = catchAsync(
   }
 );
 
-/*/ Get all transactions for admin /*/
-const getAllTransactions = catchAsync(async (req: Request, res: Response) => {
-  const result = await transactionServices.getAllTransactions();
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "All Transactions Retrieved Successfully",
-    data: result,
-  });
-});
+
 
 export const transactionControllers = {
   addMoney,
@@ -126,5 +117,4 @@ export const transactionControllers = {
   cashIn,
   cashOut,
   getTransactionHistory,
-  getAllTransactions,
 };

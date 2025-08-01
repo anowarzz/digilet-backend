@@ -20,6 +20,8 @@ const getAllUsers = catchAsync(
   }
 );
 
+// -----------------------------------//
+
 // get single user  //
 const getSingleUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -34,6 +36,8 @@ const getSingleUser = catchAsync(
     });
   }
 );
+
+// -----------------------------------//
 
 // delete a user  //
 const deleteUser = catchAsync(
@@ -51,8 +55,94 @@ const deleteUser = catchAsync(
   }
 );
 
+// -----------------------------------//
+// block user wallet  //
+const blockUserWallet = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.userId;
+
+    const blockedWallet = await adminServices.blockUserWallet(userId);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "User Wallet Blocked Successfully",
+      data: blockedWallet,
+    });
+  }
+);
+
+// -----------------------------------//
+// unblock user wallet  //
+const unblockUserWallet = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.userId;
+
+    const unblockedWallet = await adminServices.unblockUserWallet(userId);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "User Wallet Unblocked Successfully",
+      data: unblockedWallet,
+    });
+  }
+);
+
+// -----------------------------------//
+// approve agent //
+const approveAgent = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const agentId = req.params.agentId;
+
+    const approvedAgent = await adminServices.approveAgent(agentId);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Agent Approved Successfully",
+      data: approvedAgent,
+    });
+  }
+);
+
+// -----------------------------------//
+// suspend agent //
+
+const suspendAgent = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const agentId = req.params.agentId;
+
+    const suspendedAgent = await adminServices.suspendAgent(agentId);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Agent Suspended Successfully",
+      data: suspendedAgent,
+    });
+  }
+);
+
+// -----------------------------------//
+// Get all transactions for admin //
+const getAllTransactions = catchAsync(async (req: Request, res: Response) => {
+  const result = await adminServices.getAllTransactions();
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "All Transactions Retrieved Successfully",
+    data: result,
+  });
+});
+
 export const adminControllers = {
   getAllUsers,
   getSingleUser,
   deleteUser,
+  blockUserWallet,
+  unblockUserWallet,
+  approveAgent,
+  suspendAgent,
+  getAllTransactions,
 };
