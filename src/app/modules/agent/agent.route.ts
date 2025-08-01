@@ -1,12 +1,10 @@
 import { Router } from "express";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { validateRequest } from "../../middlewares/validateRequest";
-import {
-  cashInTransactionZodSchema,
-  cashOutTransactionZodSchema,
-} from "../transaction/transaction.validation";
+
 import { UserRole } from "../user/user.interface";
 import { agentControllers } from "./agent.controller";
+import { cashInTransactionZodSchema, cashOutTransactionZodSchema } from "../wallet/wallet.validation";
 
 const router = Router();
 

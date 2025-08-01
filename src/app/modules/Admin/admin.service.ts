@@ -82,6 +82,21 @@ const getSingleUser = async (userId: string) => {
   return user;
 };
 
+// -----------------------------------
+/*/ update a user profile /*/
+const updateUserProfile = async (userId: string, payload: Partial<IUser>) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+  const updatedUser = await User.findByIdAndUpdate(userId, payload, {
+    new: true,
+    runValidators: true,
+  }).select("-password");
+  return updatedUser;
+};
+// Add to export: updateAnyUserProfile
+
 // -------------------------------
 
 /*/  delete a user /*/
@@ -389,4 +404,5 @@ export const adminServices = {
   getAllWallets,
   getSingleWallet,
   getAllTransactions,
+  updateUserProfile,
 };

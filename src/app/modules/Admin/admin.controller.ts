@@ -53,6 +53,25 @@ const getSingleUser = catchAsync(
 );
 
 // -----------------------------------
+// update a user profile
+const updateUserProfile = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.userId;
+    const userData = req.body;
+
+    const updatedUser = await adminServices.updateUserProfile(userId, userData);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "User Profile Updated Successfully",
+      data: updatedUser,
+    });
+  }
+);
+
+
+// -----------------------------------
 
 // delete a user
 const deleteUser = catchAsync(
@@ -189,6 +208,7 @@ export const adminControllers = {
   approveAgent,
   suspendAgent,
   getAllTransactions,
+  updateUserProfile,
   getAllWallets,
   getSingleWallet,
 };

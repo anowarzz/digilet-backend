@@ -43,6 +43,14 @@ router.get(
   adminControllers.getSingleUser
 );
 
+// update any user profile
+router.patch(
+  "/users/update/:userId",
+  checkAuth(UserRole.ADMIN),
+  adminControllers.updateUserProfile
+);
+
+
 // get single wallet
 router.get(
   "/wallets/:walletId",

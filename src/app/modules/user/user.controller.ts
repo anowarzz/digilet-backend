@@ -2,6 +2,7 @@
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
 import { JwtPayload } from "jsonwebtoken";
+import AppError from "../../errorHelpers/appError";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { userServices } from "./user.service";
@@ -20,8 +21,6 @@ const createUser = catchAsync(
     });
   }
 );
-
-
 
 // get user profile -> get me
 const getMyProfile = catchAsync(
@@ -43,8 +42,16 @@ const getMyProfile = catchAsync(
 const updateUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.id;
-    const verifiedToken = req.user;
+    const verifiedToken = req.user as JwtPayload;
     const payload = req.body;
+
+    // Only allow current user to update their own profile
+    if (userId !== verifiedToken.userId) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "You are not allowed to update this user profile"
+      );
+    }
 
     const user = await userServices.updateUser(
       userId,
