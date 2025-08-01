@@ -1,9 +1,57 @@
+import bcryptjs from "bcryptjs";
 import httpStatus from "http-status-codes";
+import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/appError";
 import { Transaction } from "../transaction/transaction.model";
-import { UserRole, UserStatus } from "../user/user.interface";
+import {
+  IAuthProvider,
+  IUser,
+  UserRole,
+  UserStatus,
+} from "../user/user.interface";
 import { User } from "../user/user.model";
 import { Wallet } from "../wallet/wallet.model";
+
+/*/  create admin /*/
+const createAdmin = async (adminData: Partial<IUser>) => {
+  // Validate required fields
+  if (!adminData.phone || !adminData.password || !adminData.name) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Missing required admin fields");
+  }
+
+  // Check if admin already exists
+  const existingAdmin = await User.findOne({
+    phone: adminData.phone,
+    role: UserRole.ADMIN,
+  });
+  if (existingAdmin) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Admin already exists with this phone number"
+    );
+  }
+
+  // Hash password
+  const hashedPassword = await bcryptjs.hash(
+    adminData.password as string,
+    Number(envVars.BCRYPT_SALT_ROUNDS)
+  );
+
+  const authProvider: IAuthProvider = {
+    provider: "credentials",
+    providerId: adminData.phone,
+  };
+
+  const newAdmin = await User.create({
+    ...adminData,
+    password: hashedPassword,
+    role: UserRole.ADMIN,
+    auths: [authProvider],
+    status: UserStatus.ACTIVE,
+    isVerified: true,
+  });
+  return newAdmin;
+};
 
 /*/ get all users /*/
 const getAllUsers = async () => {
@@ -318,6 +366,7 @@ const getAllTransactions = async (page = 1, limit = 20) => {
 };
 
 export const adminServices = {
+  createAdmin,
   getAllUsers,
   getSingleUser,
   deleteUser,

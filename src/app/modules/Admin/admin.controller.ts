@@ -5,6 +5,21 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { adminServices } from "./admin.service";
 
+// create admin
+const createAdmin = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const adminData = req.body;
+    const newAdmin = await adminServices.createAdmin(adminData);
+
+    sendResponse(res, {
+      statusCode: httpStatus.CREATED,
+      success: true,
+      message: "Admin Created Successfully",
+      data: newAdmin,
+    });
+  }
+);
+
 // get all users
 const getAllUsers = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -149,6 +164,7 @@ const getAllTransactions = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const adminControllers = {
+  createAdmin,
   getAllUsers,
   getSingleUser,
   deleteUser,

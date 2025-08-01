@@ -25,6 +25,13 @@ const createUser = async (payload: Partial<IUser>) => {
       throw new Error("user alreay exist with this phone number");
     }
 
+    if (role === UserRole.ADMIN) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "You are not allowed to create admin role"
+      );
+    }
+
     const hashedPassword = await bcryptjs.hash(
       password as string,
       Number(envVars.BCRYPT_SALT_ROUNDS)
@@ -77,8 +84,6 @@ const createUser = async (payload: Partial<IUser>) => {
     throw error;
   }
 };
-
-
 
 /*/ get user profile -> get me  /*/
 const getMyProfile = async (userId: string) => {

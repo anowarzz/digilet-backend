@@ -1,9 +1,19 @@
 import { Router } from "express";
 import { checkAuth } from "../../middlewares/checkAuth";
+import { validateRequest } from "../../middlewares/validateRequest";
 import { UserRole } from "../user/user.interface";
+import { createUserZodSchema } from "../user/user.validation";
 import { adminControllers } from "./admin.controller";
 
 const router = Router();
+
+// create admin
+router.post(
+  "/create-admin",
+  validateRequest(createUserZodSchema),
+  checkAuth(UserRole.ADMIN),
+  adminControllers.createAdmin
+);
 
 // get all users
 router.get(
@@ -25,8 +35,6 @@ router.get(
   checkAuth(UserRole.ADMIN),
   adminControllers.getAllWallets
 );
-
-
 
 // get single user by id
 router.get(
