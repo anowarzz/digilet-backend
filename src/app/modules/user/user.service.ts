@@ -78,16 +78,7 @@ const createUser = async (payload: Partial<IUser>) => {
   }
 };
 
-/*/ get single user  /*/
-const getSingleUser = async (userId: string) => {
-  const user = await User.findById(userId).select("-password");
 
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
-  }
-
-  return user;
-};
 
 /*/ get user profile -> get me  /*/
 const getMyProfile = async (userId: string) => {
@@ -162,6 +153,5 @@ const updateUser = async (
 export const userServices = {
   createUser,
   getMyProfile,
-  getSingleUser,
   updateUser,
 };

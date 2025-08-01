@@ -20,7 +20,22 @@ const getAllUsers = catchAsync(
   }
 );
 
-// delete a user
+// get single user  //
+const getSingleUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.id;
+    const user = await adminServices.getSingleUser(userId);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "User Retrieved Successfully",
+      data: user,
+    });
+  }
+);
+
+// delete a user  //
 const deleteUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.id;
@@ -38,5 +53,6 @@ const deleteUser = catchAsync(
 
 export const adminControllers = {
   getAllUsers,
+  getSingleUser,
   deleteUser,
 };

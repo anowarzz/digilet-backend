@@ -21,20 +21,7 @@ const createUser = catchAsync(
   }
 );
 
-// get single user
-const getSingleUser = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.params.id;
-    const user = await userServices.getSingleUser(userId);
 
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: "User Retrieved Successfully",
-      data: user,
-    });
-  }
-);
 
 // get user profile -> get me
 const getMyProfile = catchAsync(
@@ -76,7 +63,6 @@ const updateUser = catchAsync(
 
 export const userControllers = {
   createUser,
-  getSingleUser,
   updateUser,
   getMyProfile,
 };

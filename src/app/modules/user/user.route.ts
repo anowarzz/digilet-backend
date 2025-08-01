@@ -21,12 +21,8 @@ router.get(
   userControllers.getMyProfile
 );
 
-// get single user
-router.get(
-  "/:id",
-  checkAuth(...Object.values(UserRole)),
-  userControllers.getSingleUser
-);
+
+
 
 // update a user
 router.patch(
