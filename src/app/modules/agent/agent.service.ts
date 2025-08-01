@@ -8,13 +8,10 @@ import {
   TransactionType,
 } from "../transaction/transaction.interface";
 import { Transaction } from "../transaction/transaction.model";
-import {
-  ICashInPayload,
-  ICashOutPayload,
-} from "../transaction/transaction.types";
 import { UserRole, UserStatus } from "../user/user.interface";
 import { User } from "../user/user.model";
 import { Wallet } from "../wallet/wallet.model";
+import { ICashInPayload, ICashOutPayload } from "../wallet/wallet.types";
 
 /*/ CASH IN agent adds money to user wallet /*/
 const cashIn = async (payload: ICashInPayload, userId: string) => {

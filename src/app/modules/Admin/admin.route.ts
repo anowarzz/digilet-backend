@@ -43,6 +43,13 @@ router.get(
   adminControllers.getSingleUser
 );
 
+// get single wallet
+router.get(
+  "/wallets/:walletId",
+  checkAuth(UserRole.ADMIN),
+  adminControllers.getSingleWallet
+);
+
 // delete a user
 router.delete(
   "/users/delete/:userId",

@@ -53,6 +53,8 @@ const createAdmin = async (adminData: Partial<IUser>) => {
   return newAdmin;
 };
 
+// -------------------------
+
 /*/ get all users /*/
 const getAllUsers = async () => {
   const users = await User.find({ isDeleted: false }).select("-password");
@@ -67,7 +69,7 @@ const getAllUsers = async () => {
   };
 };
 
-// --------------------------------------//
+// --------------------------------------
 
 /*/ get single user  /*/
 const getSingleUser = async (userId: string) => {
@@ -80,7 +82,7 @@ const getSingleUser = async (userId: string) => {
   return user;
 };
 
-// ------------------------------- //
+// -------------------------------
 
 /*/  delete a user /*/
 const deleteUser = async (userId: string) => {
@@ -128,7 +130,7 @@ const deleteUser = async (userId: string) => {
   }
 };
 
-// -----------------------------------//
+// -----------------------------------
 /*/ block user wallet /*/
 const blockUserWallet = async (userId: string) => {
   const session = await Wallet.startSession();
@@ -180,7 +182,7 @@ const blockUserWallet = async (userId: string) => {
   }
 };
 
-// -----------------------------------//
+// -----------------------------------
 /*/ unblock user wallet /*/
 const unblockUserWallet = async (userId: string) => {
   const session = await Wallet.startSession();
@@ -232,7 +234,7 @@ const unblockUserWallet = async (userId: string) => {
   }
 };
 
-// -----------------------------------//
+// -----------------------------------
 /*/ Approve a agent /*/
 const approveAgent = async (agentId: string) => {
   const session = await Wallet.startSession();
@@ -284,7 +286,7 @@ const approveAgent = async (agentId: string) => {
   }
 };
 
-// -----------------------------------//
+// -----------------------------------
 
 /*/ Suspend a agent /*/
 const suspendAgent = async (agentId: string) => {
@@ -330,7 +332,7 @@ const suspendAgent = async (agentId: string) => {
   }
 };
 
-// -----------------------------------//
+// -----------------------------------
 /*/ Get all wallets /*/
 const getAllWallets = async () => {
   const wallets = await Wallet.find({});
@@ -338,6 +340,16 @@ const getAllWallets = async () => {
     throw new AppError(httpStatus.NOT_FOUND, "No Wallets Found");
   }
   return wallets;
+};
+
+// -----------------------------------
+// get single wallet
+const getSingleWallet = async (walletId: string) => {
+  const wallet = await Wallet.findById(walletId);
+  if (!wallet) {
+    throw new AppError(httpStatus.NOT_FOUND, "Wallet not found");
+  }
+  return wallet;
 };
 
 // ----------------------------------------------------- //
@@ -375,5 +387,6 @@ export const adminServices = {
   approveAgent,
   suspendAgent,
   getAllWallets,
+  getSingleWallet,
   getAllTransactions,
 };

@@ -83,6 +83,22 @@ const getAllWallets = catchAsync(async (req: Request, res: Response) => {
 });
 
 // -----------------------------------
+// get single wallet
+const getSingleWallet = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const walletId = req.params.walletId;
+    const wallet = await adminServices.getSingleWallet(walletId);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Wallet Retrieved Successfully",
+      data: wallet,
+    });
+  }
+);
+
+// -----------------------------------
 // block user wallet
 const blockUserWallet = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -174,4 +190,5 @@ export const adminControllers = {
   suspendAgent,
   getAllTransactions,
   getAllWallets,
+  getSingleWallet,
 };
