@@ -1,9 +1,20 @@
 import { Router } from "express";
 import { checkAuth } from "../../middlewares/checkAuth";
+import { validateRequest } from "../../middlewares/validateRequest";
 import { UserRole } from "../user/user.interface";
+import { createUserZodSchema } from "../user/user.validation";
+import { addBalanceZodSchema } from "../wallet/wallet.validation";
 import { adminControllers } from "./admin.controller";
 
 const router = Router();
+
+// create admin
+router.post(
+  "/create-admin",
+  validateRequest(createUserZodSchema),
+  checkAuth(UserRole.ADMIN),
+  adminControllers.createAdmin
+);
 
 // get all users
 router.get(
@@ -19,6 +30,13 @@ router.get(
   adminControllers.getAllTransactions
 );
 
+// get all transactions of a specific user
+router.get(
+  "/transactions/user/:userId",
+  checkAuth(UserRole.ADMIN),
+  adminControllers.getUserTransactions
+);
+
 // get all wallets
 router.get(
   "/wallets/all",
@@ -26,13 +44,33 @@ router.get(
   adminControllers.getAllWallets
 );
 
-
+// add balance to a wallet
+router.patch(
+  "/wallets/add-balance/:id",
+  validateRequest(addBalanceZodSchema),
+  checkAuth(UserRole.ADMIN),
+  adminControllers.addBalanceToWallet
+);
 
 // get single user by id
 router.get(
   "/users/:userId",
   checkAuth(UserRole.ADMIN),
   adminControllers.getSingleUser
+);
+
+// update any user profile
+router.patch(
+  "/users/update/:userId",
+  checkAuth(UserRole.ADMIN),
+  adminControllers.updateUserProfile
+);
+
+// get single wallet
+router.get(
+  "/wallets/:walletId",
+  checkAuth(UserRole.ADMIN),
+  adminControllers.getSingleWallet
 );
 
 // delete a user

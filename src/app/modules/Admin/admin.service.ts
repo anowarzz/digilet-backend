@@ -1,25 +1,93 @@
+import bcryptjs from "bcryptjs";
 import httpStatus from "http-status-codes";
+import { Types } from "mongoose";
+import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/appError";
+import { QueryBuilder } from "../../utils/QueryBuilder";
+import { getTransactionId } from "../../utils/generateIDs";
+import {
+  ITransaction,
+  TransactionStatus,
+  TransactionType,
+} from "../transaction/transaction.interface";
 import { Transaction } from "../transaction/transaction.model";
-import { UserRole, UserStatus } from "../user/user.interface";
+import {
+  IAuthProvider,
+  IUser,
+  UserRole,
+  UserStatus,
+} from "../user/user.interface";
 import { User } from "../user/user.model";
 import { Wallet } from "../wallet/wallet.model";
 
-/*/ get all users /*/
-const getAllUsers = async () => {
-  const users = await User.find({ isDeleted: false }).select("-password");
+/*/  create admin /*/
+const createAdmin = async (adminData: Partial<IUser>) => {
+  // Validate required fields
+  if (!adminData.phone || !adminData.password || !adminData.name) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Missing required admin fields");
+  }
 
-  const totalUsers = await User.countDocuments({ isDeleted: false });
+  // Check if admin already exists
+  const existingAdmin = await User.findOne({
+    phone: adminData.phone,
+    role: UserRole.ADMIN,
+  });
+  if (existingAdmin) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Admin already exists with this phone number"
+    );
+  }
+
+  // Hash password
+  const hashedPassword = await bcryptjs.hash(
+    adminData.password as string,
+    Number(envVars.BCRYPT_SALT_ROUNDS)
+  );
+
+  const authProvider: IAuthProvider = {
+    provider: "credentials",
+    providerId: adminData.phone,
+  };
+
+  const newAdmin = await User.create({
+    ...adminData,
+    password: hashedPassword,
+    role: UserRole.ADMIN,
+    auths: [authProvider],
+    status: UserStatus.ACTIVE,
+    isVerified: true,
+  });
+  return newAdmin;
+};
+
+// -------------------------
+
+/*/ get all users /*/
+const getAllUsers = async (query: Record<string, string>) => {
+  const baseFilter = { isDeleted: false };
+
+  // Create QueryBuilder with base filter
+  const queryBuilder = new QueryBuilder(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    User.find(baseFilter).select("-password") as any,
+    query
+  );
+
+  queryBuilder.filter().sort().paginate();
+
+  const [data, meta] = await Promise.all([
+    queryBuilder.build(),
+    queryBuilder.getMeta(),
+  ]);
 
   return {
-    meta: {
-      total: totalUsers,
-    },
-    data: users,
+    meta,
+    data,
   };
 };
 
-// --------------------------------------//
+// --------------------------------------
 
 /*/ get single user  /*/
 const getSingleUser = async (userId: string) => {
@@ -32,7 +100,22 @@ const getSingleUser = async (userId: string) => {
   return user;
 };
 
-// ------------------------------- //
+// -----------------------------------
+/*/ update a user profile /*/
+const updateUserProfile = async (userId: string, payload: Partial<IUser>) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+  const updatedUser = await User.findByIdAndUpdate(userId, payload, {
+    new: true,
+    runValidators: true,
+  }).select("-password");
+  return updatedUser;
+};
+// Add to export: updateAnyUserProfile
+
+// -------------------------------
 
 /*/  delete a user /*/
 const deleteUser = async (userId: string) => {
@@ -80,7 +163,7 @@ const deleteUser = async (userId: string) => {
   }
 };
 
-// -----------------------------------//
+// -----------------------------------
 /*/ block user wallet /*/
 const blockUserWallet = async (userId: string) => {
   const session = await Wallet.startSession();
@@ -132,7 +215,7 @@ const blockUserWallet = async (userId: string) => {
   }
 };
 
-// -----------------------------------//
+// -----------------------------------
 /*/ unblock user wallet /*/
 const unblockUserWallet = async (userId: string) => {
   const session = await Wallet.startSession();
@@ -184,7 +267,7 @@ const unblockUserWallet = async (userId: string) => {
   }
 };
 
-// -----------------------------------//
+// -----------------------------------
 /*/ Approve a agent /*/
 const approveAgent = async (agentId: string) => {
   const session = await Wallet.startSession();
@@ -236,7 +319,7 @@ const approveAgent = async (agentId: string) => {
   }
 };
 
-// -----------------------------------//
+// -----------------------------------
 
 /*/ Suspend a agent /*/
 const suspendAgent = async (agentId: string) => {
@@ -282,42 +365,208 @@ const suspendAgent = async (agentId: string) => {
   }
 };
 
-// -----------------------------------//
+// -----------------------------------
 /*/ Get all wallets /*/
-const getAllWallets = async () => {
-  const wallets = await Wallet.find({});
-  if (!wallets || wallets.length === 0) {
-    throw new AppError(httpStatus.NOT_FOUND, "No Wallets Found");
+const getAllWallets = async (query: Record<string, string>) => {
+  const baseFilter = { isDeleted: false };
+
+  const queryBuilder = new QueryBuilder(Wallet.find(baseFilter), query);
+
+  queryBuilder.filter().sort().paginate();
+
+  const [data, meta] = await Promise.all([
+    queryBuilder.build(),
+    queryBuilder.getMeta(),
+  ]);
+
+  return {
+    meta,
+    data,
+  };
+};
+
+// -----------------------------------
+// get single wallet
+const getSingleWallet = async (walletId: string) => {
+  const wallet = await Wallet.findById(walletId);
+  if (!wallet) {
+    throw new AppError(httpStatus.NOT_FOUND, "Wallet not found");
   }
-  return wallets;
+  return wallet;
+};
+
+// -----------------------------------
+/*/ ADD BALANCE to wallet  /*/
+const addBalanceToWallet = async (
+  userId: string,
+  payload: { amount: number; description?: string },
+  adminUserId: string
+) => {
+  const { amount, description = "Admin balance top-up" } = payload;
+  const session = await Wallet.startSession();
+  session.startTransaction();
+
+  try {
+    if (!amount || amount <= 0) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Amount must be a positive number greater than 0"
+      );
+    }
+
+    // Find the target user
+    const targetUser = await User.findById(userId).session(session);
+
+    if (!targetUser) {
+      throw new AppError(httpStatus.NOT_FOUND, "User not found");
+    }
+
+    if (targetUser.isDeleted) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Cannot add balance to a deleted user account"
+      );
+    }
+
+    if (
+      targetUser.status === UserStatus.SUSPENDED ||
+      targetUser.status === UserStatus.BLOCKED
+    ) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        `Cannot add balance to ${targetUser.status.toLowerCase()} user account`
+      );
+    }
+
+    // Find the target user's wallet
+    const targetWallet = await Wallet.findOne({
+      userId: targetUser._id,
+    }).session(session);
+
+    if (!targetWallet) {
+      throw new AppError(httpStatus.NOT_FOUND, "User wallet not found");
+    }
+
+    if (targetWallet.isBlocked) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "Cannot add balance to blocked wallet"
+      );
+    }
+
+    if (targetWallet.isDeleted) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "Cannot add balance to deleted wallet"
+      );
+    }
+
+    // Add the amount to the target wallet
+    const addAmount = Number(amount);
+    const updatedWallet = await Wallet.findByIdAndUpdate(
+      targetWallet._id,
+      { $inc: { balance: addAmount } },
+      { session, new: true }
+    );
+
+    // Create a transaction record for admin top-up
+    const transactionPayload: ITransaction = {
+      transactionType: TransactionType.ADMIN_TOPUP,
+      transactionId: getTransactionId(),
+      initiatedBy: new Types.ObjectId(adminUserId),
+      fromWallet: targetWallet._id,
+      toWallet: targetWallet._id,
+      amount: addAmount,
+      status: TransactionStatus.COMPLETED,
+      description: `${description} - ${addAmount} ${targetWallet.currency} added to ${targetUser.name}'s wallet`,
+    };
+
+    const transaction = new Transaction(transactionPayload);
+    await transaction.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return {
+      updatedWallet,
+      transaction,
+      targetUser: {
+        id: targetUser._id,
+        name: targetUser.name,
+        phone: targetUser.phone,
+        role: targetUser.role,
+      },
+    };
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
 };
 
 // ----------------------------------------------------- //
 /*/ Get All Transactions --> For Admin /*/
-const getAllTransactions = async (page = 1, limit = 20) => {
-  const skip = (page - 1) * limit;
+const getAllTransactions = async (query: Record<string, string>) => {
+  const queryBuilder = new QueryBuilder(Transaction.find(), query);
 
-  const transactions = await Transaction.find()
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limit);
+  queryBuilder.filter().sort().paginate();
 
-  const totalTransactions = await Transaction.countDocuments();
-
-  const totalPages = Math.ceil(totalTransactions / limit);
+  const [data, meta] = await Promise.all([
+    queryBuilder.build(),
+    queryBuilder.getMeta(),
+  ]);
 
   return {
-    meta: {
-      totalTransactions,
-      currentPage: page,
-      totalPages,
-      limit,
-    },
-    transactions,
+    meta,
+    data,
+  };
+};
+
+// ----------------------------------------------------- //
+/*/ Get User Transactions --> For Admin /*/
+const getUserTransactions = async (
+  userId: string,
+  query: Record<string, string>
+) => {
+  // Check if user exists
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  // Get the user's wallet
+  const userWallet = await Wallet.findOne({ userId });
+  if (!userWallet) {
+    throw new AppError(httpStatus.NOT_FOUND, "User wallet not found");
+  }
+
+  const baseQuery = {
+    $or: [{ fromWallet: userWallet._id }, { toWallet: userWallet._id }],
+  };
+
+  const queryBuilder = new QueryBuilder(
+    Transaction.find(baseQuery)
+      .populate("fromWallet", "walletId userId")
+      .populate("toWallet", "walletId userId")
+      .populate("initiatedBy", "name phone"),
+    query
+  );
+
+  queryBuilder.filter().sort().paginate();
+
+  const [data, meta] = await Promise.all([
+    queryBuilder.build(),
+    queryBuilder.getMeta(),
+  ]);
+
+  return {
+    meta,
+    data,
   };
 };
 
 export const adminServices = {
+  createAdmin,
   getAllUsers,
   getSingleUser,
   deleteUser,
@@ -326,5 +575,9 @@ export const adminServices = {
   approveAgent,
   suspendAgent,
   getAllWallets,
+  getSingleWallet,
+  addBalanceToWallet,
   getAllTransactions,
+  getUserTransactions,
+  updateUserProfile,
 };

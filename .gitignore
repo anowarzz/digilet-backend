@@ -28,7 +28,6 @@ out/
 
 # Environment files
 .env
-.env.*
 
 # Coverage
 coverage/

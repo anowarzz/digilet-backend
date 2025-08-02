@@ -9,7 +9,6 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { setAuthCookie } from "../../utils/setCookie";
 import { createUserToken } from "../../utils/userTokens";
-import e from "cors";
 
 // user login with credentials
 const credentialsLogin = catchAsync(
@@ -39,8 +38,6 @@ const credentialsLogin = catchAsync(
   }
 );
 
-
-
 /*/ log out user /*/
 const logOut = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -63,8 +60,6 @@ const logOut = catchAsync(
     });
   }
 );
-
-
 
 export const AuthControllers = {
   credentialsLogin,
