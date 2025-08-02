@@ -7,7 +7,7 @@ const router = Router();
 
 // transaction history
 router.get(
-  "/history",
+  "/me/history",
   checkAuth(UserRole.USER, UserRole.AGENT),
   transactionControllers.getTransactionHistory
 );

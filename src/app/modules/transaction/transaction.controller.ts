@@ -8,9 +8,11 @@ import { transactionServices } from "./transaction.service";
 const getTransactionHistory = catchAsync(
   async (req: Request, res: Response) => {
     const user = req.user as JwtPayload;
+    const query = req.query as Record<string, string>;
 
     const result = await transactionServices.getTransactionHistory(
-      user?.userId
+      user?.userId,
+      query 
     );
     sendResponse(res, {
       statusCode: 200,
