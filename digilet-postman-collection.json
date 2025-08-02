@@ -1,0 +1,903 @@
+{
+	"info": {
+		"_postman_id": "068be2a0-d740-48b5-9475-2c82bc0e7955",
+		"name": "Digilet Payment System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26445638"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"phone\": \"01344455566\",\r\n  \"password\": \"Test@123\",\r\n  \"name\": \"Saidul Islam\",\r\n  \"email\": \"saidul@mail.com\", \r\n  \"userName\": \"saidul_fast\",\r\n  \"role\": \"USER\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/user/register",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Own Profile",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhlMWFhZGVkNmZjMzU0OWIyMWM2N2EiLCJwaG9uZSI6Iis4ODAxNzEyMzQ1Njc4Iiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NTQxNDM1NjUsImV4cCI6MTc1NDMxNjM2NX0.34ZKKegF9S5F6FHW5pRolA00pfs-tZUCurcagBhSVEM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"Rifat Ahmed Shuvo\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/user/688e1aaded6fc3549b21c67a",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"688e1aaded6fc3549b21c67a"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Own Profile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhlMWFhZGVkNmZjMzU0OWIyMWM2N2EiLCJwaG9uZSI6Iis4ODAxNzEyMzQ1Njc4Iiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NTQxNDM1NjUsImV4cCI6MTc1NDMxNjM2NX0.34ZKKegF9S5F6FHW5pRolA00pfs-tZUCurcagBhSVEM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/user/me",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"phone\": \"+8801555444333\",\r\n  \"password\": \"Admin@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/auth/login",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Log Out",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/auth/logout",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Wallet",
+			"item": [
+				{
+					"name": "Add Money Agent->User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhlMWY5N2NlZTVkZDM0ZjZmMmYyMWYiLCJwaG9uZSI6IjAxNzI0ODg3NjE5Iiwicm9sZSI6IkFHRU5UIiwiaWF0IjoxNzU0MTQ1MDQ1LCJleHAiOjE3NTQzMTc4NDV9.FaKQnT1NL2gGhqnrlY5jHcD27KdsCZbQn2qgrQdRvO8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \r\n  \"agentPhone\": \"+8801887654321\",\r\n  \"amount\": 2,\r\n  \"description\": \"Payment for dinner\"\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/wallet/add-money",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wallet",
+								"add-money"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Money Use->User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhlMWY5N2NlZTVkZDM0ZjZmMmYyMWYiLCJwaG9uZSI6IjAxNzI0ODg3NjE5Iiwicm9sZSI6IkFHRU5UIiwiaWF0IjoxNzU0MTQ1MDQ1LCJleHAiOjE3NTQzMTc4NDV9.FaKQnT1NL2gGhqnrlY5jHcD27KdsCZbQn2qgrQdRvO8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \r\n  \"receiverPhone\": \"+8801887654321\",\r\n  \"amount\": 5,\r\n  \"description\": \"eid gift\"\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/wallet/send-money",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wallet",
+								"send-money"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Withdraw Money User->Agent",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhlMWY5N2NlZTVkZDM0ZjZmMmYyMWYiLCJwaG9uZSI6IjAxNzI0ODg3NjE5Iiwicm9sZSI6IkFHRU5UIiwiaWF0IjoxNzU0MTQ1MDQ1LCJleHAiOjE3NTQzMTc4NDV9.FaKQnT1NL2gGhqnrlY5jHcD27KdsCZbQn2qgrQdRvO8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \r\n  \"agentPhone\": \"+8801887654321\",\r\n  \"amount\": 10,\r\n  \"description\": \"need money\"\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/wallet/withdraw",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wallet",
+								"withdraw"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Wallet",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhlMWY5N2NlZTVkZDM0ZjZmMmYyMWYiLCJwaG9uZSI6IjAxNzI0ODg3NjE5Iiwicm9sZSI6IkFHRU5UIiwiaWF0IjoxNzU0MTQ1MDQ1LCJleHAiOjE3NTQzMTc4NDV9.FaKQnT1NL2gGhqnrlY5jHcD27KdsCZbQn2qgrQdRvO8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/wallet/me",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wallet",
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transaction",
+			"item": [
+				{
+					"name": "Transaction History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhlMWY5N2NlZTVkZDM0ZjZmMmYyMWYiLCJwaG9uZSI6IjAxNzI0ODg3NjE5Iiwicm9sZSI6IkFHRU5UIiwiaWF0IjoxNzU0MTQ1MDQ1LCJleHAiOjE3NTQzMTc4NDV9.FaKQnT1NL2gGhqnrlY5jHcD27KdsCZbQn2qgrQdRvO8",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/transaction/me/history",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"transaction",
+								"me",
+								"history"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Create Admin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjYTdmMTk0YmU5M2RmODU5YTg5MGYiLCJwaG9uZSI6IjAxMjM0NTY3ODkwIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzU0MTQ1NTY4LCJleHAiOjE3NTQzMTgzNjh9.qYzfU3u4Fd9JADi8tmjIo8YOFdX50vjvgc69CiisdhQ",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"phone\": \"+8801555444333\",\r\n  \"password\": \"Admin@123\",\r\n  \"name\": \"Super Admin\",\r\n  \"email\": \"admin@digilet.com\",\r\n  \"userName\": \"admin1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/admin/create-admin",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"create-admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All Transactions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhlMjNhNGNlZTVkZDM0ZjZmMmYyOTMiLCJwaG9uZSI6Iis4ODAxNTU1NDQ0MzMzIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzU0MTQ1NzIyLCJleHAiOjE3NTQzMTg1MjJ9.fEloDaIWdV6tSyNGPFO5lWW5x7-NhZb8P3m7Xy2RkrE",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/admin/transactions/all",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"transactions",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Single User All Transactions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhlMjNhNGNlZTVkZDM0ZjZmMmYyOTMiLCJwaG9uZSI6Iis4ODAxNTU1NDQ0MzMzIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzU0MTQ1NzIyLCJleHAiOjE3NTQzMTg1MjJ9.fEloDaIWdV6tSyNGPFO5lWW5x7-NhZb8P3m7Xy2RkrE",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/admin/transactions/user/688e1f3ccee5dd34f6f2f219?limit=2",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"transactions",
+								"user",
+								"688e1f3ccee5dd34f6f2f219"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhlMjNhNGNlZTVkZDM0ZjZmMmYyOTMiLCJwaG9uZSI6Iis4ODAxNTU1NDQ0MzMzIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzU0MTQ1NzIyLCJleHAiOjE3NTQzMTg1MjJ9.fEloDaIWdV6tSyNGPFO5lWW5x7-NhZb8P3m7Xy2RkrE",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/admin/users/all",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"users",
+								"all"
+							]
+						},
+						"description": "## Endpoint: Retrieve All Users\n\nThis endpoint retrieves a list of all users from the system. It allows for filtering based on user roles and statuses, enabling efficient management of user data. Additionally, the endpoint supports pagination, allowing clients to specify the number of results returned per page, the sorting order, and the specific page of results to retrieve.\n\n### Query Parameters\n\n- `role` (optional): Filter users by their role (e.g., 'user').\n    \n- `status` (optional): Filter users based on their account status.\n    \n- `limit` (optional): Specify the maximum number of users to return in a single response.\n    \n- `sort` (optional): Define the sorting order of the returned users.\n    \n- `page` (optional): Indicate the specific page of results to retrieve.\n    \n\n### Response\n\nOn a successful request, the server responds with a status code of 200 and returns the user data in XML format.\n\nEnsure to utilize the appropriate query parameters to tailor the response to your needs.\n\nThis endpoint retrieves a list of all users filtered by their role. It is particularly useful for administrators who need to manage user accounts based on specific roles within the system.\n\n#### Request\n\n- **Method**: GET\n    \n- **Endpoint**: `{{local_host}}/api/v1/admin/users/all`\n    \n- **Query Parameter**:\n    \n    - `role` (string): The role of the users to be retrieved. In this case, the value is set to `user`, which filters the results to only include users with the specified role.\n        \n\n#### Expected Response\n\n- **Status Code**: 200 OK\n    \n- **Content-Type**: text/xml\n    \n- **Response Body**: The response will contain an XML formatted list of users matching the specified role. The exact structure of the XML will depend on the implementation.\n    \n\n#### Notes\n\n- Ensure that the request is made with appropriate authentication and authorization headers, as this endpoint is intended for admin use.\n    \n- The response will be empty if no users are found with the specified role."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjYTdmMTk0YmU5M2RmODU5YTg5MGYiLCJwaG9uZSI6IjAxMjM0NTY3ODkwIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzU0MTQ1NTY4LCJleHAiOjE3NTQzMTgzNjh9.qYzfU3u4Fd9JADi8tmjIo8YOFdX50vjvgc69CiisdhQ",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/admin/users/688e1f97cee5dd34f6f2f21f",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"users",
+								"688e1f97cee5dd34f6f2f21f"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjYTdmMTk0YmU5M2RmODU5YTg5MGYiLCJwaG9uZSI6IjAxMjM0NTY3ODkwIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzU0MTQ1NTY4LCJleHAiOjE3NTQzMTgzNjh9.qYzfU3u4Fd9JADi8tmjIo8YOFdX50vjvgc69CiisdhQ",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/admin/users/delete/688e1aaded6fc3549b21c67a",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"users",
+								"delete",
+								"688e1aaded6fc3549b21c67a"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Block User",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjYTdmMTk0YmU5M2RmODU5YTg5MGYiLCJwaG9uZSI6IjAxMjM0NTY3ODkwIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzU0MTQ1NTY4LCJleHAiOjE3NTQzMTgzNjh9.qYzfU3u4Fd9JADi8tmjIo8YOFdX50vjvgc69CiisdhQ",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/admin/users/block/688e1aaded6fc3549b21c67a",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"users",
+								"block",
+								"688e1aaded6fc3549b21c67a"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unblock User",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjYTdmMTk0YmU5M2RmODU5YTg5MGYiLCJwaG9uZSI6IjAxMjM0NTY3ODkwIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzU0MTQ1NTY4LCJleHAiOjE3NTQzMTgzNjh9.qYzfU3u4Fd9JADi8tmjIo8YOFdX50vjvgc69CiisdhQ",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/admin/users/unblock/688e1aaded6fc3549b21c67a",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"users",
+								"unblock",
+								"688e1aaded6fc3549b21c67a"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Agent",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjYTdmMTk0YmU5M2RmODU5YTg5MGYiLCJwaG9uZSI6IjAxMjM0NTY3ODkwIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzU0MTQ1NTY4LCJleHAiOjE3NTQzMTgzNjh9.qYzfU3u4Fd9JADi8tmjIo8YOFdX50vjvgc69CiisdhQ",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/admin/agents/approve/688e1f3ccee5dd34f6f2f219",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"agents",
+								"approve",
+								"688e1f3ccee5dd34f6f2f219"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Suspend Agent",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjYTdmMTk0YmU5M2RmODU5YTg5MGYiLCJwaG9uZSI6IjAxMjM0NTY3ODkwIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzU0MTQ1NTY4LCJleHAiOjE3NTQzMTgzNjh9.qYzfU3u4Fd9JADi8tmjIo8YOFdX50vjvgc69CiisdhQ",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/admin/agents/suspend/688e1f3ccee5dd34f6f2f219",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"agents",
+								"suspend",
+								"688e1f3ccee5dd34f6f2f219"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Wallets",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjYTdmMTk0YmU5M2RmODU5YTg5MGYiLCJwaG9uZSI6IjAxMjM0NTY3ODkwIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzU0MTQ1NTY4LCJleHAiOjE3NTQzMTgzNjh9.qYzfU3u4Fd9JADi8tmjIo8YOFdX50vjvgc69CiisdhQ",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/admin/wallets/all",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"wallets",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single Wallet",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjYTdmMTk0YmU5M2RmODU5YTg5MGYiLCJwaG9uZSI6IjAxMjM0NTY3ODkwIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzU0MTQ1NTY4LCJleHAiOjE3NTQzMTgzNjh9.qYzfU3u4Fd9JADi8tmjIo8YOFdX50vjvgc69CiisdhQ",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/admin/wallets/688e1f3dcee5dd34f6f2f21b",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"wallets",
+								"688e1f3dcee5dd34f6f2f21b"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Balance To Wallet",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjYTdmMTk0YmU5M2RmODU5YTg5MGYiLCJwaG9uZSI6IjAxMjM0NTY3ODkwIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzU0MTQ1NTY4LCJleHAiOjE3NTQzMTgzNjh9.qYzfU3u4Fd9JADi8tmjIo8YOFdX50vjvgc69CiisdhQ",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"amount\": 50\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/admin/wallets/add-balance/688e1aaded6fc3549b21c67a",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"wallets",
+								"add-balance",
+								"688e1aaded6fc3549b21c67a"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Agent",
+			"item": [
+				{
+					"name": "Cash In Agent->User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhlMWY5N2NlZTVkZDM0ZjZmMmYyMWYiLCJwaG9uZSI6IjAxNzI0ODg3NjE5Iiwicm9sZSI6IkFHRU5UIiwiaWF0IjoxNzU0MTQ1MDQ1LCJleHAiOjE3NTQzMTc4NDV9.FaKQnT1NL2gGhqnrlY5jHcD27KdsCZbQn2qgrQdRvO8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n  \"userPhone\": \"+8801712345678\",\r\n  \"amount\": 2,\r\n  \"description\": \"cash in\"\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/agent/cash-in",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"agent",
+								"cash-in"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cash Out User->Agent",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhlMWY5N2NlZTVkZDM0ZjZmMmYyMWYiLCJwaG9uZSI6IjAxNzI0ODg3NjE5Iiwicm9sZSI6IkFHRU5UIiwiaWF0IjoxNzU0MTQ1MDQ1LCJleHAiOjE3NTQzMTc4NDV9.FaKQnT1NL2gGhqnrlY5jHcD27KdsCZbQn2qgrQdRvO8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \r\n  \"userPhone\": \"+8801712345678\",\r\n  \"amount\": 5,\r\n  \"description\": \"cash-out\"\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://digilet-server.vercel.app/api/v1/agent/cash-out",
+							"protocol": "https",
+							"host": [
+								"digilet-server",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"agent",
+								"cash-out"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

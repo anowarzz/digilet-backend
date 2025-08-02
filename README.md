@@ -125,7 +125,19 @@ The server will start on `http://localhost:5000` (or your configured PORT).
 
 ## 📚 API Endpoints
 
-### 🔐 Authentication & Authorization
+### � Postman Collection
+
+You can easily test all API endpoints using our Postman collection:
+
+**📄 [Download Postman Collection](./digilet-postman-collection.json)**
+
+To use the collection:
+
+1. Download the collection file from the repository
+2. Import it into Postman
+4. Start testing the endpoints
+
+### �🔐 Authentication & Authorization
 
 For protected routes, include the JWT token directly in the Authorization header:
 
