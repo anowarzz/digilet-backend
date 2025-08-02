@@ -69,7 +69,8 @@ export const updateUserZodSchema = z.object({
     .regex(
       /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{6,}$/,
       "Password must be at least 6 characters long, include one uppercase letter and one special character."
-    ).optional(),
+    )
+    .optional(),
 
   name: z
     .string({ error: "Name Is Required" })

@@ -13,6 +13,3 @@ export const createTransactionZodSchema = z.object({
   fee: z.number().optional(),
   description: z.string().optional(),
 });
-
-
-

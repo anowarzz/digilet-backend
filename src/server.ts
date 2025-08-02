@@ -25,7 +25,7 @@ const startServer = async () => {
 //  start server
 (async () => {
   await startServer();
-  await seedSuperAdmin()
+  await seedSuperAdmin();
 })();
 
 // Unhandled rejection handling
@@ -40,7 +40,6 @@ process.on("unhandledRejection", (err) => {
   }
   process.exit(1);
 });
-
 
 // Uncaught exception handling
 process.on("uncaughtException", (err) => {

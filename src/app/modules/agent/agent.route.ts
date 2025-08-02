@@ -3,8 +3,11 @@ import { checkAuth } from "../../middlewares/checkAuth";
 import { validateRequest } from "../../middlewares/validateRequest";
 
 import { UserRole } from "../user/user.interface";
+import {
+  cashInTransactionZodSchema,
+  cashOutTransactionZodSchema,
+} from "../wallet/wallet.validation";
 import { agentControllers } from "./agent.controller";
-import { cashInTransactionZodSchema, cashOutTransactionZodSchema } from "../wallet/wallet.validation";
 
 const router = Router();
 

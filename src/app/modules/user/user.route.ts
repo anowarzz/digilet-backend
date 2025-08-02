@@ -21,9 +21,6 @@ router.get(
   userControllers.getMyProfile
 );
 
-
-
-
 // update a user
 router.patch(
   "/:id",

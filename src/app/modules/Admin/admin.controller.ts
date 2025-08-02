@@ -21,6 +21,8 @@ const createAdmin = catchAsync(
   }
 );
 
+
+// -----------------------------------
 // get all users
 const getAllUsers = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {

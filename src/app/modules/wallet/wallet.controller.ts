@@ -6,7 +6,6 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { WalletServices } from "./wallet.service";
 
-
 // get my wallet controller
 const getMyWallet = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as JwtPayload;

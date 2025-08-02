@@ -43,11 +43,19 @@ export const checkAuth =
       }
 
       if (isUserExist.isDeleted) {
-        throw new AppError(httpStatus.FORBIDDEN, "This user account is Deleted");
+        throw new AppError(
+          httpStatus.FORBIDDEN,
+          "This user account is Deleted"
+        );
       }
 
       if (!authRoles.includes(verifiedToken.role)) {
-        throw new AppError(403, `Unauthorized access. Only ${authRoles.join(", ")} can access this route`);
+        throw new AppError(
+          403,
+          `Unauthorized access. Only ${authRoles.join(
+            ", "
+          )} can access this route`
+        );
       }
 
       req.user = verifiedToken;

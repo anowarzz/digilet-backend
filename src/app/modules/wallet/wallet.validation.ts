@@ -98,7 +98,6 @@ export const cashOutTransactionZodSchema = z.object({
   description: z.string().optional(),
 });
 
-
 // ADMIN_TOPUP: admin adds balance to any wallet
 export const addBalanceZodSchema = z.object({
   amount: z
