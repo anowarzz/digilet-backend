@@ -21,7 +21,6 @@ export const updateWalletZodSchema = z.object({
 
 /*/  WALLET TRANSACTIONS VALIDATION ZOD SCHEMA  /*/
 
-
 // ADD_MONEY: user adds money to their own wallet from agent wallet
 export const addMoneyTransactionZodSchema = z.object({
   agentPhone: z
@@ -36,9 +35,6 @@ export const addMoneyTransactionZodSchema = z.object({
     .min(1, "Amount must be more than 0"),
   description: z.string().optional(),
 });
-
-
-
 
 // WITHDRAW: user withdraws money to agent wallet
 export const withdrawTransactionZodSchema = z.object({
@@ -55,7 +51,6 @@ export const withdrawTransactionZodSchema = z.object({
     .min(1, "Amount must be more than 0"),
   description: z.string().optional(),
 });
-
 
 // SEND_MONEY: user sends money to another user
 export const sendMoneyTransactionZodSchema = z.object({
@@ -89,8 +84,6 @@ export const cashInTransactionZodSchema = z.object({
   description: z.string().optional(),
 });
 
-
-
 // CASH_OUT: agent withdraws money from user
 export const cashOutTransactionZodSchema = z.object({
   userPhone: z
@@ -101,6 +94,15 @@ export const cashOutTransactionZodSchema = z.object({
     }),
   amount: z
     .number("amount - Cash Out Amount Is Required")
+    .min(1, "Amount must be more than 0"),
+  description: z.string().optional(),
+});
+
+
+// ADMIN_TOPUP: admin adds balance to any wallet
+export const addBalanceZodSchema = z.object({
+  amount: z
+    .number("amount - Balance Amount Is Required")
     .min(1, "Amount must be more than 0"),
   description: z.string().optional(),
 });

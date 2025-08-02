@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
+import { JwtPayload } from "jsonwebtoken";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { adminServices } from "./admin.service";
@@ -70,7 +71,6 @@ const updateUserProfile = catchAsync(
   }
 );
 
-
 // -----------------------------------
 
 // delete a user
@@ -113,6 +113,30 @@ const getSingleWallet = catchAsync(
       success: true,
       message: "Wallet Retrieved Successfully",
       data: wallet,
+    });
+  }
+);
+
+// -----------------------------------
+// Add balance to wallet
+const addBalanceToWallet = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.id;
+    const { amount, description } = req.body;
+    const adminUser = req.user as JwtPayload;
+    const adminUserId = adminUser.userId;
+
+    const result = await adminServices.addBalanceToWallet(
+      userId,
+      { amount, description: description || "Balance added by admin" },
+      adminUserId
+    );
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Balance Added Successfully",
+      data: result,
     });
   }
 );
@@ -201,6 +225,7 @@ const getAllTransactions = catchAsync(async (req: Request, res: Response) => {
 export const adminControllers = {
   createAdmin,
   getAllUsers,
+  addBalanceToWallet,
   getSingleUser,
   deleteUser,
   blockUserWallet,

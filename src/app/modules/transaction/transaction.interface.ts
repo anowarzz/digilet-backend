@@ -7,6 +7,7 @@ export enum TransactionType {
   CASH_IN = "CASH_IN", // agent adds money to user's wallet
   CASH_OUT = "CASH_OUT", // agent withdraws money from user
   RECEIVE_MONEY = "RECEIVE_MONEY", // user receives money from another user
+  ADMIN_TOPUP = "ADMIN_TOPUP", // admin adds money to user/agent wallet
 }
 
 export enum TransactionStatus {

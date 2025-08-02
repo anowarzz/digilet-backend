@@ -3,6 +3,7 @@ import { checkAuth } from "../../middlewares/checkAuth";
 import { validateRequest } from "../../middlewares/validateRequest";
 import { UserRole } from "../user/user.interface";
 import { createUserZodSchema } from "../user/user.validation";
+import { addBalanceZodSchema } from "../wallet/wallet.validation";
 import { adminControllers } from "./admin.controller";
 
 const router = Router();
@@ -36,6 +37,14 @@ router.get(
   adminControllers.getAllWallets
 );
 
+// add balance to a wallet
+router.patch(
+  "/wallets/add-balance/:id",
+  validateRequest(addBalanceZodSchema),
+  checkAuth(UserRole.ADMIN),
+  adminControllers.addBalanceToWallet
+);
+
 // get single user by id
 router.get(
   "/users/:userId",
@@ -49,7 +58,6 @@ router.patch(
   checkAuth(UserRole.ADMIN),
   adminControllers.updateUserProfile
 );
-
 
 // get single wallet
 router.get(

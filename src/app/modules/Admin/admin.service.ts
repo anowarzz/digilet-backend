@@ -1,7 +1,14 @@
 import bcryptjs from "bcryptjs";
 import httpStatus from "http-status-codes";
+import { Types } from "mongoose";
 import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/appError";
+import { getTransactionId } from "../../utils/generateIDs";
+import {
+  ITransaction,
+  TransactionStatus,
+  TransactionType,
+} from "../transaction/transaction.interface";
 import { Transaction } from "../transaction/transaction.model";
 import {
   IAuthProvider,
@@ -367,6 +374,115 @@ const getSingleWallet = async (walletId: string) => {
   return wallet;
 };
 
+// -----------------------------------
+/*/ ADD BALANCE to wallet  /*/
+const addBalanceToWallet = async (
+  userId: string,
+  payload: { amount: number; description?: string },
+  adminUserId: string
+) => {
+  const { amount, description = "Admin balance top-up" } = payload;
+  const session = await Wallet.startSession();
+  session.startTransaction();
+
+  try {
+    if (!amount || amount <= 0) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Amount must be a positive number greater than 0"
+      );
+    }
+
+    // Find the target user
+    const targetUser = await User.findById(userId).session(session);
+
+    if (!targetUser) {
+      throw new AppError(httpStatus.NOT_FOUND, "User not found");
+    }
+
+    if (targetUser.isDeleted) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Cannot add balance to a deleted user account"
+      );
+    }
+
+    if (
+      targetUser.status === UserStatus.SUSPENDED ||
+      targetUser.status === UserStatus.BLOCKED
+    ) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        `Cannot add balance to ${targetUser.status.toLowerCase()} user account`
+      );
+    }
+
+    // Find the target user's wallet
+    const targetWallet = await Wallet.findOne({
+      userId: targetUser._id,
+    }).session(session);
+
+    if (!targetWallet) {
+      throw new AppError(httpStatus.NOT_FOUND, "User wallet not found");
+    }
+
+    if (targetWallet.isBlocked) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "Cannot add balance to blocked wallet"
+      );
+    }
+
+    if (targetWallet.isDeleted) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "Cannot add balance to deleted wallet"
+      );
+    }
+
+    // Add the amount to the target wallet
+    const addAmount = Number(amount);
+    const updatedWallet = await Wallet.findByIdAndUpdate(
+      targetWallet._id,
+      { $inc: { balance: addAmount } },
+      { session, new: true }
+    );
+
+    // Create a transaction record for admin top-up
+    const transactionPayload: ITransaction = {
+      transactionType: TransactionType.ADMIN_TOPUP,
+      transactionId: getTransactionId(),
+      initiatedBy: new Types.ObjectId(adminUserId),
+      fromWallet: targetWallet._id,
+      toWallet: targetWallet._id,
+      amount: addAmount,
+      status: TransactionStatus.COMPLETED,
+      description: `${description} - ${addAmount} ${targetWallet.currency} added to ${targetUser.name}'s wallet`,
+    };
+
+    const transaction = new Transaction(transactionPayload);
+    await transaction.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return {
+      updatedWallet,
+      transaction,
+      targetUser: {
+        id: targetUser._id,
+        name: targetUser.name,
+        phone: targetUser.phone,
+        role: targetUser.role,
+      },
+    };
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
+};
+
 // ----------------------------------------------------- //
 /*/ Get All Transactions --> For Admin /*/
 const getAllTransactions = async (page = 1, limit = 20) => {
@@ -403,6 +519,7 @@ export const adminServices = {
   suspendAgent,
   getAllWallets,
   getSingleWallet,
+  addBalanceToWallet,
   getAllTransactions,
   updateUserProfile,
 };
