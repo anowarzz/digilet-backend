@@ -21,7 +21,6 @@ const createAdmin = catchAsync(
   }
 );
 
-
 // -----------------------------------
 // get all users
 const getAllUsers = catchAsync(
@@ -45,7 +44,7 @@ const getAllUsers = catchAsync(
 // get single user
 const getSingleUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.params.id;
+    const userId = req.params.userId;
     const user = await adminServices.getSingleUser(userId);
 
     sendResponse(res, {
@@ -80,7 +79,7 @@ const updateUserProfile = catchAsync(
 // delete a user
 const deleteUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.params.id;
+    const userId = req.params.userId;
 
     const deletedUser = await adminServices.deleteUser(userId);
 
