@@ -18,6 +18,7 @@ import {
 } from "../user/user.interface";
 import { User } from "../user/user.model";
 import { Wallet } from "../wallet/wallet.model";
+import { IUserQuery } from "./admin.types";
 
 /*/  create admin /*/
 const createAdmin = async (adminData: Partial<IUser>) => {
@@ -63,14 +64,31 @@ const createAdmin = async (adminData: Partial<IUser>) => {
 // -------------------------
 
 /*/ get all users /*/
-const getAllUsers = async () => {
-  const users = await User.find({ isDeleted: false }).select("-password");
+const getAllUsers = async (filters?: {
+  role?: UserRole;
+  status?: UserStatus;
+}) => {
+  // Build query object
 
-  const totalUsers = await User.countDocuments({ isDeleted: false });
+  const query: IUserQuery = { isDeleted: false };
+
+  // Add role filter if provided
+  if (filters?.role) {
+    query.role = filters.role;
+  }
+
+  // Add status filter if provided
+  if (filters?.status) {
+    query.status = filters.status;
+  }
+
+  const users = await User.find(query).select("-password");
+  const totalUsers = await User.countDocuments(query);
 
   return {
     meta: {
       total: totalUsers,
+      filters: filters || {},
     },
     data: users,
   };
