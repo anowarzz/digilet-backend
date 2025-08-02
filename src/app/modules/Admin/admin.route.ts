@@ -30,6 +30,13 @@ router.get(
   adminControllers.getAllTransactions
 );
 
+// get all transactions of a specific user
+router.get(
+  "/transactions/user/:userId",
+  checkAuth(UserRole.ADMIN),
+  adminControllers.getUserTransactions
+);
+
 // get all wallets
 router.get(
   "/wallets/all",

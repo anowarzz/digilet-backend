@@ -522,6 +522,49 @@ const getAllTransactions = async (query: Record<string, string>) => {
   };
 };
 
+// ----------------------------------------------------- //
+/*/ Get User Transactions --> For Admin /*/
+const getUserTransactions = async (
+  userId: string,
+  query: Record<string, string>
+) => {
+  // Check if user exists
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  // Get the user's wallet
+  const userWallet = await Wallet.findOne({ userId });
+  if (!userWallet) {
+    throw new AppError(httpStatus.NOT_FOUND, "User wallet not found");
+  }
+
+  const baseQuery = {
+    $or: [{ fromWallet: userWallet._id }, { toWallet: userWallet._id }],
+  };
+
+  const queryBuilder = new QueryBuilder(
+    Transaction.find(baseQuery)
+      .populate("fromWallet", "walletId userId")
+      .populate("toWallet", "walletId userId")
+      .populate("initiatedBy", "name phone"),
+    query
+  );
+
+  queryBuilder.filter().sort().paginate();
+
+  const [data, meta] = await Promise.all([
+    queryBuilder.build(),
+    queryBuilder.getMeta(),
+  ]);
+
+  return {
+    meta,
+    data,
+  };
+};
+
 export const adminServices = {
   createAdmin,
   getAllUsers,
@@ -535,5 +578,6 @@ export const adminServices = {
   getSingleWallet,
   addBalanceToWallet,
   getAllTransactions,
+  getUserTransactions,
   updateUserProfile,
 };

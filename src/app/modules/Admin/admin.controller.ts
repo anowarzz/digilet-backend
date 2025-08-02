@@ -231,6 +231,25 @@ const getAllTransactions = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// -----------------------------------
+// Get all transactions of a specific user
+const getUserTransactions = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.userId;
+    const query = req.query as Record<string, string>;
+
+    const result = await adminServices.getUserTransactions(userId, query);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "User Transactions Retrieved Successfully",
+      meta: result.meta,
+      data: result.data,
+    });
+  }
+);
+
 export const adminControllers = {
   createAdmin,
   getAllUsers,
@@ -242,6 +261,7 @@ export const adminControllers = {
   approveAgent,
   suspendAgent,
   getAllTransactions,
+  getUserTransactions,
   updateUserProfile,
   getAllWallets,
   getSingleWallet,
