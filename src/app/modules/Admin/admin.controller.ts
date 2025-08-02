@@ -24,8 +24,6 @@ const createAdmin = catchAsync(
 // get all users
 const getAllUsers = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-
-
     const query = req.query as Record<string, string>;
 
     const result = await adminServices.getAllUsers(query);
@@ -96,12 +94,16 @@ const deleteUser = catchAsync(
 // -----------------------------------
 // get all wallets
 const getAllWallets = catchAsync(async (req: Request, res: Response) => {
-  const wallets = await adminServices.getAllWallets();
+  const result = await adminServices.getAllWallets(
+    req.query as Record<string, string>
+  );
+
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "All wallets retrieved",
-    data: wallets,
+    message: "All wallets retrieved successfully",
+    meta: result.meta,
+    data: result.data,
   });
 });
 
@@ -217,8 +219,7 @@ const suspendAgent = catchAsync(
 // -----------------------------------
 // Get all transactions for admin
 const getAllTransactions = catchAsync(async (req: Request, res: Response) => {
-
-    const query = req.query as Record<string, string>;
+  const query = req.query as Record<string, string>;
   const result = await adminServices.getAllTransactions(query);
 
   sendResponse(res, {

@@ -367,12 +367,22 @@ const suspendAgent = async (agentId: string) => {
 
 // -----------------------------------
 /*/ Get all wallets /*/
-const getAllWallets = async () => {
-  const wallets = await Wallet.find({});
-  if (!wallets || wallets.length === 0) {
-    throw new AppError(httpStatus.NOT_FOUND, "No Wallets Found");
-  }
-  return wallets;
+const getAllWallets = async (query: Record<string, string>) => {
+  const baseFilter = { isDeleted: false };
+
+  const queryBuilder = new QueryBuilder(Wallet.find(baseFilter), query);
+
+  queryBuilder.filter().sort().paginate();
+
+  const [data, meta] = await Promise.all([
+    queryBuilder.build(),
+    queryBuilder.getMeta(),
+  ]);
+
+  return {
+    meta,
+    data,
+  };
 };
 
 // -----------------------------------
