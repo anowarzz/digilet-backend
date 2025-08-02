@@ -3,6 +3,7 @@ import httpStatus from "http-status-codes";
 import { Types } from "mongoose";
 import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/appError";
+import { QueryBuilder } from "../../utils/QueryBuilder";
 import { getTransactionId } from "../../utils/generateIDs";
 import {
   ITransaction,
@@ -18,7 +19,6 @@ import {
 } from "../user/user.interface";
 import { User } from "../user/user.model";
 import { Wallet } from "../wallet/wallet.model";
-import { IUserQuery } from "./admin.types";
 
 /*/  create admin /*/
 const createAdmin = async (adminData: Partial<IUser>) => {
@@ -64,33 +64,26 @@ const createAdmin = async (adminData: Partial<IUser>) => {
 // -------------------------
 
 /*/ get all users /*/
-const getAllUsers = async (filters?: {
-  role?: UserRole;
-  status?: UserStatus;
-}) => {
-  // Build query object
+const getAllUsers = async (query: Record<string, string>) => {
+  const baseFilter = { isDeleted: false };
 
-  const query: IUserQuery = { isDeleted: false };
+  // Create QueryBuilder with base filter
+  const queryBuilder = new QueryBuilder(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    User.find(baseFilter).select("-password") as any,
+    query
+  );
 
-  // Add role filter if provided
-  if (filters?.role) {
-    query.role = filters.role;
-  }
+  queryBuilder.filter().sort().paginate();
 
-  // Add status filter if provided
-  if (filters?.status) {
-    query.status = filters.status;
-  }
-
-  const users = await User.find(query).select("-password");
-  const totalUsers = await User.countDocuments(query);
+  const [data, meta] = await Promise.all([
+    queryBuilder.build(),
+    queryBuilder.getMeta(),
+  ]);
 
   return {
-    meta: {
-      total: totalUsers,
-      filters: filters || {},
-    },
-    data: users,
+    meta,
+    data,
   };
 };
 
@@ -503,26 +496,19 @@ const addBalanceToWallet = async (
 
 // ----------------------------------------------------- //
 /*/ Get All Transactions --> For Admin /*/
-const getAllTransactions = async (page = 1, limit = 20) => {
-  const skip = (page - 1) * limit;
+const getAllTransactions = async (query: Record<string, string>) => {
+  const queryBuilder = new QueryBuilder(Transaction.find(), query);
 
-  const transactions = await Transaction.find()
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limit);
+  queryBuilder.filter().sort().paginate();
 
-  const totalTransactions = await Transaction.countDocuments();
-
-  const totalPages = Math.ceil(totalTransactions / limit);
+  const [data, meta] = await Promise.all([
+    queryBuilder.build(),
+    queryBuilder.getMeta(),
+  ]);
 
   return {
-    meta: {
-      totalTransactions,
-      currentPage: page,
-      totalPages,
-      limit,
-    },
-    transactions,
+    meta,
+    data,
   };
 };
 

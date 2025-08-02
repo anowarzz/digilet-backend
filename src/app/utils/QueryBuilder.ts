@@ -18,6 +18,13 @@ export class QueryBuilder<T> {
       delete filter[field];
     }
 
+    const fieldsToUppercase = ["role", "status", "transactionType"];
+    for (const field of fieldsToUppercase) {
+      if (filter[field] && typeof filter[field] === "string") {
+        filter[field] = (filter[field] as string).toUpperCase();
+      }
+    }
+
     this.modelQuery = this.modelQuery.find(filter);
 
     return this;
@@ -33,7 +40,7 @@ export class QueryBuilder<T> {
 
   paginate(): this {
     const page = Number(this.query.page) || 1;
-    const limit = Number(this.query.limit) || 20;
+    const limit = Number(this.query.limit) || 10;
     const skip = (page - 1) * limit;
 
     this.modelQuery = this.modelQuery.skip(skip).limit(limit);
@@ -54,7 +61,7 @@ export class QueryBuilder<T> {
     );
 
     const page = Number(this.query.page) || 1;
-    const limit = Number(this.query.limit) || 20;
+    const limit = Number(this.query.limit) || 10;
 
     const totalPages = Math.ceil(totalDocuments / limit);
 

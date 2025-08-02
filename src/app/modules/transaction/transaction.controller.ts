@@ -12,13 +12,14 @@ const getTransactionHistory = catchAsync(
 
     const result = await transactionServices.getTransactionHistory(
       user?.userId,
-      query 
+      query
     );
     sendResponse(res, {
       statusCode: 200,
       success: true,
       message: "Transaction History Retrieved Successfully",
-      data: result,
+      meta: result.meta,
+      data: result.data,
     });
   }
 );

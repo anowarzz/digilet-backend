@@ -2,10 +2,8 @@
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
 import { JwtPayload } from "jsonwebtoken";
-import AppError from "../../errorHelpers/appError";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
-import { UserRole, UserStatus } from "../user/user.interface";
 import { adminServices } from "./admin.service";
 
 // create admin
@@ -26,49 +24,18 @@ const createAdmin = catchAsync(
 // get all users
 const getAllUsers = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { role, status } = req.query;
 
-    // Build filters object
-    const filters: { role?: UserRole; status?: UserStatus } = {};
 
-    // Validate and set role filter
-    if (role && typeof role === "string") {
-      const upperRole = role.toUpperCase();
-      if (!Object.values(UserRole).includes(upperRole as UserRole)) {
-        throw new AppError(
-          httpStatus.BAD_REQUEST,
-          `Invalid role: ${role}. Valid roles are: ${Object.values(
-            UserRole
-          ).join(", ")}`
-        );
-      }
-      filters.role = upperRole as UserRole;
-    }
+    const query = req.query as Record<string, string>;
 
-    // Validate and set status filter
-    if (status && typeof status === "string") {
-      const upperStatus = status.toUpperCase();
-      if (!Object.values(UserStatus).includes(upperStatus as UserStatus)) {
-        throw new AppError(
-          httpStatus.BAD_REQUEST,
-          `Invalid status: ${status}. Valid statuses are: ${Object.values(
-            UserStatus
-          ).join(", ")}`
-        );
-      }
-      filters.status = upperStatus as UserStatus;
-    }
-
-    const users = await adminServices.getAllUsers(
-      Object.keys(filters).length > 0 ? filters : undefined
-    );
+    const result = await adminServices.getAllUsers(query);
 
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: "Users Retrieved Successfully",
-      meta: users.meta,
-      data: users.data,
+      meta: result.meta,
+      data: result.data,
     });
   }
 );
@@ -250,12 +217,16 @@ const suspendAgent = catchAsync(
 // -----------------------------------
 // Get all transactions for admin
 const getAllTransactions = catchAsync(async (req: Request, res: Response) => {
-  const result = await adminServices.getAllTransactions();
+
+    const query = req.query as Record<string, string>;
+  const result = await adminServices.getAllTransactions(query);
+
   sendResponse(res, {
     statusCode: 200,
     success: true,
     message: "All Transactions Retrieved Successfully",
-    data: result,
+    meta: result.meta,
+    data: result.data,
   });
 });
 
