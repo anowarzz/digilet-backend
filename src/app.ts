@@ -1,3 +1,4 @@
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { Application, Request, Response } from "express";
 import passport from "passport";
@@ -13,6 +14,7 @@ const app: Application = express();
 // Middlewares
 app.use(express.json());
 app.use(passport.initialize());
+app.use(cookieParser());
 app.use(
   cors({
     origin: envVars.FRONTEND_URL,
