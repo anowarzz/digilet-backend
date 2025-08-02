@@ -17,7 +17,7 @@ app.use(passport.initialize());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: envVars.FRONTEND_URL,
+    origin: envVars.NODE_ENV === "production" ? envVars.FRONTEND_URL : true,
     credentials: true,
   })
 );
