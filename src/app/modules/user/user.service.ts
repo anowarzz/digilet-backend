@@ -22,7 +22,7 @@ const createUser = async (payload: Partial<IUser>) => {
     const ifUserExist = await User.findOne({ phone });
 
     if (ifUserExist) {
-      throw new Error("user alreay exist with this phone number");
+      throw new Error("user already exist with this phone number");
     }
 
     if (role === UserRole.ADMIN) {
