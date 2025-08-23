@@ -28,6 +28,13 @@ const cashIn = async (payload: ICashInPayload, userId: string) => {
       );
     }
 
+    if (amount < 5) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Minimum Cash In amount is ৳5"
+      );
+    }
+
     const cashInAgent = await User.findById(userId).session(session);
 
     if (
@@ -188,6 +195,13 @@ const cashOut = async (payload: ICashOutPayload, userId: string) => {
       throw new AppError(
         httpStatus.BAD_REQUEST,
         "Receiver phone number and amount are required"
+      );
+    }
+
+    if (amount < 5) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Minimum Cash Out amount is ৳5"
       );
     }
 

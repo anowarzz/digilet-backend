@@ -29,10 +29,9 @@ export const addMoneyTransactionZodSchema = z.object({
       message:
         "Agent Phone number must be valid Phone number for Bangladesh. Format: +8801XXXXXXXXX or 01XXXXXXXXX",
     }),
-
   amount: z
     .number("amount - Add Money Amount Is Required")
-    .min(1, "Amount must be more than 0"),
+    .min(5, "Minimum add money amount is ৳5"),
   description: z.string().optional(),
 });
 
@@ -48,7 +47,7 @@ export const withdrawTransactionZodSchema = z.object({
     }),
   amount: z
     .number("amount - Withdraw Amount Is Required")
-    .min(1, "Amount must be more than 0"),
+    .min(5, "Minimum withdraw amount is ৳5"),
   description: z.string().optional(),
 });
 
@@ -64,7 +63,7 @@ export const sendMoneyTransactionZodSchema = z.object({
     }),
   amount: z
     .number("amount - Send Money Amount Is Required")
-    .min(1, "Amount must be more than 0"),
+    .min(5, "Send Money Amount must be more than 5"),
   description: z.string().optional(),
 });
 
@@ -80,7 +79,7 @@ export const cashInTransactionZodSchema = z.object({
     }),
   amount: z
     .number("amount - Cash In Amount Is Required")
-    .min(1, "Amount must be more than 0"),
+    .min(5, "Amount must be more than 5"),
   description: z.string().optional(),
 });
 
@@ -94,7 +93,7 @@ export const cashOutTransactionZodSchema = z.object({
     }),
   amount: z
     .number("amount - Cash Out Amount Is Required")
-    .min(1, "Amount must be more than 0"),
+    .min(5, "Cash Out Amount must be more than 5"),
   description: z.string().optional(),
 });
 

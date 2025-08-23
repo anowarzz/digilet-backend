@@ -54,6 +54,13 @@ const addMoney = async (payload: IAddMoneyPayload, userId: string) => {
       );
     }
 
+    if (amount < 5) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Minimum add money amount is ৳5"
+      );
+    }
+
     const userOwnWallet = await Wallet.findOne({ userId: userId }).session(
       session
     );
@@ -100,17 +107,11 @@ const addMoney = async (payload: IAddMoneyPayload, userId: string) => {
     }).session(session);
 
     if (!sourceAgentWallet) {
-      throw new AppError(
-        httpStatus.BAD_REQUEST,
-        "Source agent wallet not found"
-      );
+      throw new AppError(httpStatus.BAD_REQUEST, " Agent wallet not found");
     }
 
     if (sourceAgentWallet.isBlocked) {
-      throw new AppError(
-        httpStatus.FORBIDDEN,
-        "Source agent wallet is blocked"
-      );
+      throw new AppError(httpStatus.FORBIDDEN, "This agent wallet is blocked");
     }
 
     // Update the user's wallet balance
@@ -119,7 +120,7 @@ const addMoney = async (payload: IAddMoneyPayload, userId: string) => {
     if (sourceAgentWallet.balance < addAmount) {
       throw new AppError(
         httpStatus.BAD_REQUEST,
-        `Source agent wallet does not have enough balance . current balance is ${sourceAgentWallet.balance}`
+        `This agent wallet does not have enough balance . current balance is ৳ ${sourceAgentWallet.balance}`
       );
     }
 
@@ -199,6 +200,13 @@ const withdrawMoney = async (
       throw new AppError(
         httpStatus.BAD_REQUEST,
         "Agent phone number and amount are required"
+      );
+    }
+
+    if (amount < 5) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Minimum Withdraw amount is ৳5"
       );
     }
 
@@ -344,6 +352,13 @@ const sendMoney = async (payload: ISendMoneyPayload, userId: string) => {
       throw new AppError(
         httpStatus.BAD_REQUEST,
         "Receiver phone number and amount are required"
+      );
+    }
+
+    if (amount < 5) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Minimum Send Money amount is ৳5"
       );
     }
 
