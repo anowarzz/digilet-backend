@@ -16,11 +16,23 @@ router.post(
   adminControllers.createAdmin
 );
 
+// get all users and agents
+router.get(
+  "/all/users-and-agents",
+  checkAuth(UserRole.ADMIN),
+  adminControllers.getAllUsersAndAgents
+);
 // get all users
 router.get(
-  "/users/all",
+  "/all-users",
   checkAuth(UserRole.ADMIN),
   adminControllers.getAllUsers
+);
+// get all agents
+router.get(
+  "/all-agents",
+  checkAuth(UserRole.ADMIN),
+  adminControllers.getAllAgents
 );
 
 // get all transactions

@@ -31,7 +31,7 @@ router.post(
 
 // WITHDRAW MONEY FROM WALLET
 router.post(
-  "/withdraw",
+  "/withdraw-money",
   validateRequest(withdrawTransactionZodSchema),
   checkAuth(UserRole.USER, UserRole.AGENT),
   walletControllers.withdrawMoney

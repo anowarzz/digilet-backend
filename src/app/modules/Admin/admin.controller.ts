@@ -22,13 +22,28 @@ const createAdmin = catchAsync(
 );
 
 // -----------------------------------
+// get all users and agents
+const getAllUsersAndAgents = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const query = req.query as Record<string, string>;
+
+    const result = await adminServices.getAllUsersAndAgents(query);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Users & Agents Retrieved Successfully",
+      meta: result.meta,
+      data: result.data,
+    });
+  }
+);
+// -----------------------------------
 // get all users
 const getAllUsers = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const query = req.query as Record<string, string>;
 
     const result = await adminServices.getAllUsers(query);
-
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
@@ -38,9 +53,24 @@ const getAllUsers = catchAsync(
     });
   }
 );
+// -----------------------------------
+// get all users and agents
+const getAllAgents = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const query = req.query as Record<string, string>;
+
+    const result = await adminServices.getAllAgents(query);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Agents Retrieved Successfully",
+      meta: result.meta,
+      data: result.data,
+    });
+  }
+);
 
 // -----------------------------------
-
 // get single user
 const getSingleUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -254,6 +284,8 @@ const getUserTransactions = catchAsync(
 export const adminControllers = {
   createAdmin,
   getAllUsers,
+  getAllAgents,
+  getAllUsersAndAgents,
   addBalanceToWallet,
   getSingleUser,
   deleteUser,

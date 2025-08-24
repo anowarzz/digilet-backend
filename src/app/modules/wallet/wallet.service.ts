@@ -338,13 +338,17 @@ const sendMoney = async (payload: ISendMoneyPayload, userId: string) => {
   try {
     const senderUser = await User.findById(userId).session(session);
 
-    if (
-      senderUser?.status === UserStatus.BLOCKED ||
-      senderUser?.status === UserStatus.SUSPENDED
-    ) {
+    if (senderUser?.status === UserStatus.BLOCKED) {
       throw new AppError(
         httpStatus.FORBIDDEN,
-        `This user account is ${senderUser?.status}`
+        `This user account is Blocked`
+      );
+    }
+
+    if (senderUser?.status === UserStatus.SUSPENDED) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        `This user account is Suspended`
       );
     }
 

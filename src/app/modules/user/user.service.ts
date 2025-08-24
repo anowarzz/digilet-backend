@@ -98,7 +98,7 @@ const getMyProfile = async (userId: string) => {
 
 /*/ update a user /*/
 const updateUser = async (
-  userId: string,
+  userId: string, 
   payload: Partial<IUser>,
   decodedToken: JwtPayload
 ) => {

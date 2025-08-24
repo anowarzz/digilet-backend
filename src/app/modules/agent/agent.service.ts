@@ -56,7 +56,7 @@ const cashIn = async (payload: ICashInPayload, userId: string) => {
     if (cashInAgent.status === UserStatus.PENDING) {
       throw new AppError(
         httpStatus.FORBIDDEN,
-        "This agent account is pending for approval, can't do this transaction now, please wait for approval"
+        "Your agent account is pending for approval, can't do this transaction now, please wait for approval"
       );
     }
 

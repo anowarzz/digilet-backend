@@ -64,13 +64,63 @@ const createAdmin = async (adminData: Partial<IUser>) => {
 // -------------------------
 
 /*/ get all users /*/
-const getAllUsers = async (query: Record<string, string>) => {
-  const baseFilter = { isDeleted: false };
+const getAllUsersAndAgents = async (query: Record<string, string>) => {
+  const baseFilter = {
+    isDeleted: false,
+    role: { $in: [UserRole.USER, UserRole.AGENT] },
+  };
 
   // Create QueryBuilder with base filter
   const queryBuilder = new QueryBuilder(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    User.find(baseFilter).select("-password") as any,
+    User.find(baseFilter).select("-password").populate("wallet") as any,
+    query
+  );
+
+  queryBuilder.filter().sort().paginate();
+
+  const [data, meta] = await Promise.all([
+    queryBuilder.build(),
+    queryBuilder.getMeta(),
+  ]);
+
+  return {
+    meta,
+    data,
+  };
+};
+
+// -----------------------------------
+/*/ get all users /*/
+const getAllUsers = async (query: Record<string, string>) => {
+  const baseFilter = { isDeleted: false, role: UserRole.USER };
+
+  // Create QueryBuilder with base filter
+  const queryBuilder = new QueryBuilder(
+    User.find(baseFilter).select("-password").populate("wallet") as any,
+    query
+  );
+
+  queryBuilder.filter().sort().paginate();
+
+  const [data, meta] = await Promise.all([
+    queryBuilder.build(),
+    queryBuilder.getMeta(),
+  ]);
+
+  return {
+    meta,
+    data,
+  };
+};
+
+// -----------------------------------
+/*/ get all agents /*/
+const getAllAgents = async (query: Record<string, string>) => {
+  const baseFilter = { isDeleted: false, role: UserRole.AGENT };
+
+  // Create QueryBuilder with base filter
+  const queryBuilder = new QueryBuilder(
+    User.find(baseFilter).select("-password").populate("wallet") as any,
     query
   );
 
@@ -568,6 +618,8 @@ const getUserTransactions = async (
 export const adminServices = {
   createAdmin,
   getAllUsers,
+  getAllAgents,
+  getAllUsersAndAgents,
   getSingleUser,
   deleteUser,
   blockUserWallet,
