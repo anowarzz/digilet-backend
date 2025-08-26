@@ -37,7 +37,7 @@ router.get(
 
 // get all transactions
 router.get(
-  "/transactions/all",
+  "/all-transactions",
   checkAuth(UserRole.ADMIN),
   adminControllers.getAllTransactions
 );
