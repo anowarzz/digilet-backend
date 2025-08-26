@@ -93,6 +93,33 @@ const getAllUsersAndAgents = async (query: Record<string, string>) => {
 };
 
 // -----------------------------------
+// Analytics Overview for admin
+const getAnalyticsOverview = async () => {
+  // Total users
+  const totalUsers = await User.countDocuments({
+    isDeleted: false,
+    role: UserRole.USER,
+  });
+  // Total agents
+  const totalAgents = await User.countDocuments({
+    isDeleted: false,
+    role: UserRole.AGENT,
+  });
+  // Total transactions
+  const transactionCount = await Transaction.countDocuments({});
+  // Total transaction volume
+  const transactionVolumeAgg = await Transaction.aggregate([
+    { $group: { _id: null, totalVolume: { $sum: "$amount" } } },
+  ]);
+  const transactionVolume = transactionVolumeAgg[0]?.totalVolume || 0;
+  return {
+    totalUsers,
+    totalAgents,
+    transactionCount,
+    transactionVolume,
+  };
+};
+
 /*/ get all users /*/
 const getAllUsers = async (query: Record<string, string>) => {
   const baseFilter = { isDeleted: false, role: UserRole.USER };
@@ -448,26 +475,6 @@ const suspendAgent = async (agentId: string) => {
 };
 
 // -----------------------------------
-/*/ Get all wallets /*/
-const getAllWallets = async (query: Record<string, string>) => {
-  const baseFilter = { isDeleted: false };
-
-  const queryBuilder = new QueryBuilder(Wallet.find(baseFilter), query);
-
-  queryBuilder.filter().sort().paginate();
-
-  const [data, meta] = await Promise.all([
-    queryBuilder.build(),
-    queryBuilder.getMeta(),
-  ]);
-
-  return {
-    meta,
-    data,
-  };
-};
-
-// -----------------------------------
 // get single wallet
 const getSingleWallet = async (walletId: string) => {
   const wallet = await Wallet.findById(walletId);
@@ -611,6 +618,81 @@ const getAllTransactions = async (query: Record<string, string>) => {
   };
 };
 
+// -----------------------------------
+/*/ Get all wallets /*/
+const getAllWallets = async (query: Record<string, string>) => {
+  const baseFilter = { isDeleted: false };
+  const searchTerm = query.searchTerm || "";
+
+  // Aggregation pipeline for searching by user name/phone
+  const pipeline: any[] = [
+    { $match: baseFilter },
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "userInfo",
+      },
+    },
+    { $unwind: "$userInfo" },
+  ];
+
+  if (searchTerm) {
+    pipeline.push({
+      $match: {
+        $or: [
+          { "userInfo.name": { $regex: searchTerm, $options: "i" } },
+          { "userInfo.phone": { $regex: searchTerm, $options: "i" } },
+        ],
+      },
+    });
+  }
+
+  // Add sorting
+  const sort = query.sort || "-createdAt";
+  if (sort) {
+    // Convert sort to aggregation format
+    const sortObj: any = {};
+    const sortFields = sort.split(",");
+    for (const field of sortFields) {
+      const direction = field.startsWith("-") ? -1 : 1;
+      const fieldName = field.replace(/^-/, "");
+      sortObj[fieldName] = direction;
+    }
+    pipeline.push({ $sort: sortObj });
+  }
+
+  // Pagination
+  const page = Number(query.page) || 1;
+  const limit = Number(query.limit) || 10;
+  const skip = (page - 1) * limit;
+  pipeline.push({ $skip: skip });
+  pipeline.push({ $limit: limit });
+
+  // Execute aggregation
+  const data = await Wallet.aggregate(pipeline);
+
+  // Meta info
+  const totalDocumentsPipeline = [...pipeline];
+  // Remove $skip and $limit for count
+  const countPipeline = totalDocumentsPipeline.filter(
+    (stage) => !stage.$skip && !stage.$limit
+  );
+  const totalDocumentsArr = await Wallet.aggregate([
+    ...countPipeline,
+    { $count: "total" },
+  ]);
+  const total = totalDocumentsArr[0]?.total || 0;
+  const totalPages = Math.ceil(total / limit);
+  const meta = { page, limit, total, totalPages };
+
+  return {
+    meta,
+    data,
+  };
+};
+
 // ----------------------------------------------------- //
 /*/ Get User Transactions --> For Admin /*/
 const getUserTransactions = async (
@@ -672,4 +754,5 @@ export const adminServices = {
   getUserTransactions,
   updateUserProfile,
   rejectAgent,
+  getAnalyticsOverview,
 };

@@ -6,6 +6,30 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { adminServices } from "./admin.service";
 
+// User Analytics
+const getUserAnalytics = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+  const result = await adminServices.getUserAnalytics(userId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User Analytics Retrieved Successfully",
+    data: result,
+  });
+});
+
+// Agent Analytics
+const getAgentAnalytics = catchAsync(async (req: Request, res: Response) => {
+  const agentId = req.params.agentId;
+  const result = await adminServices.getAgentAnalytics(agentId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Agent Analytics Retrieved Successfully",
+    data: result,
+  });
+});
+
 // create admin
 const createAdmin = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -297,6 +321,17 @@ const getUserTransactions = catchAsync(
   }
 );
 
+// Analytics Overview
+const getAnalyticsOverview = catchAsync(async (req: Request, res: Response) => {
+  const result = await adminServices.getAnalyticsOverview();
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Analytics Overview Retrieved Successfully",
+    data: result,
+  });
+});
+
 export const adminControllers = {
   createAdmin,
   getAllUsers,
@@ -315,4 +350,7 @@ export const adminControllers = {
   updateUserProfile,
   getAllWallets,
   getSingleWallet,
+  getAnalyticsOverview,
+  getUserAnalytics,
+  getAgentAnalytics,
 };

@@ -18,11 +18,20 @@ router.post(
   checkAuth(UserRole.AGENT),
   agentControllers.cashIn
 );
+
+// cash-out
 router.post(
   "/cash-out",
   validateRequest(cashOutTransactionZodSchema),
   checkAuth(UserRole.AGENT),
   agentControllers.cashOut
+);
+
+// get own analytics
+router.get(
+  "/me/analytics",
+  checkAuth(UserRole.AGENT),
+  agentControllers.getMyAnalytics
 );
 
 export const AgentRoutes = router;

@@ -127,4 +127,11 @@ router.patch(
   adminControllers.suspendAgent
 );
 
+// analytics overview route
+router.get(
+  "/analytics/overview",
+  checkAuth(UserRole.ADMIN),
+  adminControllers.getAnalyticsOverview
+);
+
 export const AdminRoutes = router;

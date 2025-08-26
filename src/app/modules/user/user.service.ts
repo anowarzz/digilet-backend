@@ -6,6 +6,7 @@ import { Types } from "mongoose";
 import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/appError";
 import { getWalletId } from "../../utils/generateIDs";
+import { Transaction } from "../transaction/transaction.model";
 import { IWallet } from "../wallet/wallet.interface";
 import { Wallet } from "../wallet/wallet.model";
 import { IAuthProvider, IUser, UserRole } from "./user.interface";
@@ -98,7 +99,7 @@ const getMyProfile = async (userId: string) => {
 
 /*/ update a user /*/
 const updateUser = async (
-  userId: string, 
+  userId: string,
   payload: Partial<IUser>,
   decodedToken: JwtPayload
 ) => {
@@ -155,8 +156,31 @@ const updateUser = async (
   return updatedUser;
 };
 
+// -----------------
+// User self analytics
+
+const getMyAnalytics = async (userId: string) => {
+  const userWallet = await Wallet.findOne({ userId });
+  if (!userWallet)
+    throw new AppError(httpStatus.NOT_FOUND, "User wallet not found");
+  const transactionCount = await Transaction.countDocuments({
+    $or: [{ fromWallet: userWallet._id }, { toWallet: userWallet._id }],
+  });
+  const volumeAgg = await Transaction.aggregate([
+    {
+      $match: {
+        $or: [{ fromWallet: userWallet._id }, { toWallet: userWallet._id }],
+      },
+    },
+    { $group: { _id: null, totalVolume: { $sum: "$amount" } } },
+  ]);
+  const transactionVolume = volumeAgg[0]?.totalVolume || 0;
+  return { transactionCount, transactionVolume };
+};
+
 export const userServices = {
   createUser,
   getMyProfile,
   updateUser,
+  getMyAnalytics,
 };

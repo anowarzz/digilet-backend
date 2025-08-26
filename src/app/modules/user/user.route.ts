@@ -29,4 +29,11 @@ router.patch(
   userControllers.updateUser
 );
 
+// get my analytics
+router.get(
+  "/me/analytics",
+  checkAuth(...Object.values(UserRole)),
+  userControllers.getMyAnalytics
+);
+
 export const UserRoutes = router;

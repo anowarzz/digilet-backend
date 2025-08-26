@@ -1,3 +1,4 @@
+
 import { Request, Response } from "express";
 import { JwtPayload } from "jsonwebtoken";
 import { catchAsync } from "../../utils/catchAsync";
@@ -34,7 +35,22 @@ const cashOut = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+//  ----------------------
+// get my analytics
+const getMyAnalytics = catchAsync(async (req: Request, res: Response) => {
+  const decodedToken = req.user as JwtPayload;
+  const result = await agentServices.getMyAnalytics(decodedToken.userId);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Agent Analytics Retrieved Successfully",
+    data: result,
+  });
+});
+
+
 export const agentControllers = {
   cashIn,
   cashOut,
+  getMyAnalytics,
 };

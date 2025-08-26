@@ -1,3 +1,4 @@
+// Agent self analytics
 import httpStatus from "http-status-codes";
 import { Types } from "mongoose";
 import AppError from "../../errorHelpers/appError";
@@ -13,7 +14,33 @@ import { User } from "../user/user.model";
 import { Wallet } from "../wallet/wallet.model";
 import { ICashInPayload, ICashOutPayload } from "../wallet/wallet.types";
 
-/*/ CASH IN agent adds money to user wallet /*/
+
+
+
+//  Get own analytics
+const getMyAnalytics = async (agentId: string) => {
+  const agentWallet = await Wallet.findOne({ userId: agentId });
+  if (!agentWallet)
+    throw new AppError(httpStatus.NOT_FOUND, "Agent wallet not found");
+  const transactionCount = await Transaction.countDocuments({
+    $or: [{ fromWallet: agentWallet._id }, { toWallet: agentWallet._id }],
+  });
+  const volumeAgg = await Transaction.aggregate([
+    {
+      $match: {
+        $or: [{ fromWallet: agentWallet._id }, { toWallet: agentWallet._id }],
+      },
+    },
+    { $group: { _id: null, totalVolume: { $sum: "$amount" } } },
+  ]);
+  const transactionVolume = volumeAgg[0]?.totalVolume || 0;
+  return { transactionCount, transactionVolume };
+};
+
+
+
+
+///*/ CASH IN agent adds money to user wallet /*/
 const cashIn = async (payload: ICashInPayload, userId: string) => {
   const { userPhone, amount, description = "" } = payload;
 
@@ -368,4 +395,5 @@ const cashOut = async (payload: ICashOutPayload, userId: string) => {
 export const agentServices = {
   cashIn,
   cashOut,
+  getMyAnalytics,
 };

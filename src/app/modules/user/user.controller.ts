@@ -68,8 +68,21 @@ const updateUser = catchAsync(
   }
 );
 
+// Get User Own analytics
+const getMyAnalytics = catchAsync(async (req: Request, res: Response) => {
+  const decodedToken = req.user as JwtPayload;
+  const result = await userServices.getMyAnalytics(decodedToken.userId);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "User Analytics Retrieved Successfully",
+    data: result,
+  });
+});
+
 export const userControllers = {
   createUser,
   updateUser,
+  getMyAnalytics,
   getMyProfile,
 };
