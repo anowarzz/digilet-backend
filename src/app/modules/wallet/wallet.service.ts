@@ -73,13 +73,13 @@ const addMoney = async (payload: IAddMoneyPayload, userId: string) => {
     );
 
     if (!userOwnWallet) {
-      throw new AppError(httpStatus.BAD_REQUEST, "User wallet not found");
+      throw new AppError(httpStatus.BAD_REQUEST, "Your User wallet not found");
     }
 
     if (userOwnWallet.isBlocked) {
       throw new AppError(
         httpStatus.FORBIDDEN,
-        "User wallet is blocked, can't do this transaction"
+        "Your wallet is blocked, can't do this transaction"
       );
     }
 
@@ -229,13 +229,13 @@ const withdrawMoney = async (
     );
 
     if (!userOwnWallet) {
-      throw new AppError(httpStatus.BAD_REQUEST, "User wallet not found");
+      throw new AppError(httpStatus.BAD_REQUEST, "Your User wallet not found");
     }
 
     if (userOwnWallet.isBlocked) {
       throw new AppError(
         httpStatus.FORBIDDEN,
-        "User wallet is blocked, can't do this transaction"
+        "Your wallet is blocked, can't do this transaction"
       );
     }
 
@@ -289,7 +289,7 @@ const withdrawMoney = async (
     if (userOwnWallet.balance < withdrawAmount) {
       throw new AppError(
         httpStatus.BAD_REQUEST,
-        `User wallet does not have enough balance. Current balance is ${userOwnWallet.balance}`
+        `Your wallet does not have enough balance. Current balance is ${userOwnWallet.balance}`
       );
     }
 
@@ -353,16 +353,13 @@ const sendMoney = async (payload: ISendMoneyPayload, userId: string) => {
     const senderUser = await User.findById(userId).session(session);
 
     if (senderUser?.status === UserStatus.BLOCKED) {
-      throw new AppError(
-        httpStatus.FORBIDDEN,
-        `This user account is Blocked`
-      );
+      throw new AppError(httpStatus.FORBIDDEN, `Opps Your account is Blocked !`);
     }
 
     if (senderUser?.status === UserStatus.SUSPENDED) {
       throw new AppError(
         httpStatus.FORBIDDEN,
-        `This user account is Suspended`
+        `Your account is Suspended`
       );
     }
 
@@ -398,7 +395,7 @@ const sendMoney = async (payload: ISendMoneyPayload, userId: string) => {
     if (senderWallet.isBlocked) {
       throw new AppError(
         httpStatus.FORBIDDEN,
-        "Sender wallet is blocked, can't do this transaction"
+        "Your wallet is blocked, can't do this transaction"
       );
     }
 
@@ -452,7 +449,7 @@ const sendMoney = async (payload: ISendMoneyPayload, userId: string) => {
     if (senderWallet.balance < sendAmount) {
       throw new AppError(
         httpStatus.BAD_REQUEST,
-        `Sender wallet does not have enough balance. Current balance is ${senderWallet.balance}`
+        `Your wallet does not have enough balance. Current balance is ${senderWallet.balance}`
       );
     }
 
