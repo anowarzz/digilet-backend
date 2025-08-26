@@ -228,6 +228,22 @@ const approveAgent = catchAsync(
     });
   }
 );
+// -----------------------------------
+// reject agent
+const rejectAgent = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const agentId = req.params.agentId;
+
+    const rejectedAgent = await adminServices.rejectAgent(agentId);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Agent Rejected Successfully",
+      data: rejectedAgent,
+    });
+  }
+);
 
 // ---------------------------------
 // suspend agent
@@ -292,6 +308,7 @@ export const adminControllers = {
   blockUserWallet,
   unblockUserWallet,
   approveAgent,
+  rejectAgent,
   suspendAgent,
   getAllTransactions,
   getUserTransactions,

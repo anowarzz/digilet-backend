@@ -113,6 +113,13 @@ router.patch(
   adminControllers.approveAgent
 );
 
+// reject agent
+router.patch(
+  "/agents/reject/:agentId",
+  checkAuth(UserRole.ADMIN),
+  adminControllers.rejectAgent
+);
+
 // suspend agent
 router.patch(
   "/agents/suspend/:agentId",

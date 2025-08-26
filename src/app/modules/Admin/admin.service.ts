@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import bcryptjs from "bcryptjs";
 import httpStatus from "http-status-codes";
 import { Types } from "mongoose";
@@ -379,6 +380,27 @@ const approveAgent = async (agentId: string) => {
   }
 };
 
+// -------------------------
+/**
+ * Reject an agent request: set role to USER and status to ACTIVE
+ */
+const rejectAgent = async (agentId: string) => {
+  const agent = await User.findById(agentId);
+  if (!agent) {
+    throw new AppError(httpStatus.NOT_FOUND, "Agent not found");
+  }
+  if (agent.role !== UserRole.AGENT) {
+    throw new AppError(httpStatus.BAD_REQUEST, "This User is not an agent");
+  }
+  // Set role to USER and status to ACTIVE
+  const updatedUser = await User.findByIdAndUpdate(
+    agentId,
+    { role: UserRole.USER, status: UserStatus.ACTIVE },
+    { new: true, runValidators: true }
+  ).select("-password");
+  return updatedUser;
+};
+
 // -----------------------------------
 
 /*/ Suspend a agent /*/
@@ -649,4 +671,5 @@ export const adminServices = {
   getAllTransactions,
   getUserTransactions,
   updateUserProfile,
+  rejectAgent,
 };
