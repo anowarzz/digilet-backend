@@ -16,7 +16,11 @@ app.use(passport.initialize());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: true, // Allow all origins
+    origin: [
+      "http://localhost:5173",
+      "http://10.0.0.102:5173",
+      "https://digilet.vercel.app",
+    ],
     credentials: true,
   })
 );
