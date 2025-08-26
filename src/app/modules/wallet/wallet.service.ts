@@ -61,6 +61,13 @@ const addMoney = async (payload: IAddMoneyPayload, userId: string) => {
       );
     }
 
+    if (amount > 50000) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Maximum add money amount is ৳50,000"
+      );
+    }
+
     const userOwnWallet = await Wallet.findOne({ userId: userId }).session(
       session
     );
@@ -207,6 +214,13 @@ const withdrawMoney = async (
       throw new AppError(
         httpStatus.BAD_REQUEST,
         "Minimum Withdraw amount is ৳5"
+      );
+    }
+
+    if (amount > 50000) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Maximum withdraw money amount is ৳50,000"
       );
     }
 
@@ -363,6 +377,13 @@ const sendMoney = async (payload: ISendMoneyPayload, userId: string) => {
       throw new AppError(
         httpStatus.BAD_REQUEST,
         "Minimum Send Money amount is ৳5"
+      );
+    }
+
+    if (amount > 50000) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Maximum Send Money amount is ৳50,000"
       );
     }
 

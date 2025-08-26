@@ -31,7 +31,7 @@ export const addMoneyTransactionZodSchema = z.object({
     }),
   amount: z
     .number("amount - Add Money Amount Is Required")
-    .min(5, "Minimum add money amount is ৳5"),
+    .min(5, "Minimum add money amount is ৳5").max(50000, "Maximum add money amount is ৳50,000"),
   description: z.string().optional(),
 });
 
@@ -47,7 +47,7 @@ export const withdrawTransactionZodSchema = z.object({
     }),
   amount: z
     .number("amount - Withdraw Amount Is Required")
-    .min(5, "Minimum withdraw amount is ৳5"),
+    .min(5, "Minimum withdraw amount is ৳5").max(50000, "Maximum withdraw amount is ৳50,000"),
   description: z.string().optional(),
 });
 
@@ -63,7 +63,7 @@ export const sendMoneyTransactionZodSchema = z.object({
     }),
   amount: z
     .number("amount - Send Money Amount Is Required")
-    .min(5, "Send Money Amount must be more than 5"),
+    .min(5, "Send Money Amount must be more than 5").max(50000, "Send Money Amount must be less than 50,000"),
   description: z.string().optional(),
 });
 
@@ -79,7 +79,7 @@ export const cashInTransactionZodSchema = z.object({
     }),
   amount: z
     .number("amount - Cash In Amount Is Required")
-    .min(5, "Amount must be more than 5"),
+    .min(5, "Amount must be more than 5").max(50000, "Maximum Cash In Amount is 50,000"),
   description: z.string().optional(),
 });
 
@@ -93,7 +93,7 @@ export const cashOutTransactionZodSchema = z.object({
     }),
   amount: z
     .number("amount - Cash Out Amount Is Required")
-    .min(5, "Cash Out Amount must be more than 5"),
+    .min(5, "Cash Out Amount must be more than 5").max(50000, "Maximum Cash Out Amount is 50,000"),
   description: z.string().optional(),
 });
 
@@ -101,6 +101,6 @@ export const cashOutTransactionZodSchema = z.object({
 export const addBalanceZodSchema = z.object({
   amount: z
     .number("amount - Balance Amount Is Required")
-    .min(1, "Amount must be more than 0"),
+    .min(10, "Amount must be more than 10").max(100000, "Maximum Balance Amount is 1,00,000"),
   description: z.string().optional(),
 });

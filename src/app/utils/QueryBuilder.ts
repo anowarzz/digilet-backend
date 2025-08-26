@@ -30,6 +30,19 @@ export class QueryBuilder<T> {
     return this;
   }
 
+  search(searchableField: string[]): this {
+    const searchTerm = this.query.searchTerm || "";
+
+    const searchQuery = {
+      $or: searchableField.map((field) => {
+        return { [field]: { $regex: searchTerm, $options: "i" } };
+      }),
+    };
+    this.modelQuery = this.modelQuery.find(searchQuery);
+
+    return this;
+  }
+
   sort(): this {
     const sort = this.query.sort || "-createdAt";
 
@@ -38,9 +51,17 @@ export class QueryBuilder<T> {
     return this;
   }
 
+  fields(): this {
+    const fields = this.query.fields?.split(",").join(" ") || "";
+
+    this.modelQuery = this.modelQuery.select(fields);
+
+    return this;
+  }
+
   paginate(): this {
     const page = Number(this.query.page) || 1;
-    const limit = Number(this.query.limit) || 20;
+    const limit = Number(this.query.limit) || 10;
     const skip = (page - 1) * limit;
 
     this.modelQuery = this.modelQuery.skip(skip).limit(limit);
@@ -61,7 +82,7 @@ export class QueryBuilder<T> {
     );
 
     const page = Number(this.query.page) || 1;
-    const limit = Number(this.query.limit) || 20;
+    const limit = Number(this.query.limit) || 10;
 
     const totalPages = Math.ceil(totalDocuments / limit);
 

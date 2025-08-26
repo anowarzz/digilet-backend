@@ -34,6 +34,12 @@ const cashIn = async (payload: ICashInPayload, userId: string) => {
         "Minimum Cash In amount is ৳5"
       );
     }
+    if (amount > 50000) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Maximum Cash In amount is ৳50,000"
+      );
+    }
 
     const cashInAgent = await User.findById(userId).session(session);
 
@@ -202,6 +208,13 @@ const cashOut = async (payload: ICashOutPayload, userId: string) => {
       throw new AppError(
         httpStatus.BAD_REQUEST,
         "Minimum Cash Out amount is ৳5"
+      );
+    }
+
+    if (amount > 50000) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Maximum Cash Out amount is ৳50,000"
       );
     }
 

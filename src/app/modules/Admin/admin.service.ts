@@ -5,12 +5,14 @@ import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/appError";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 import { getTransactionId } from "../../utils/generateIDs";
+import { agentSearchableFields } from "../agent/agent.const";
 import {
   ITransaction,
   TransactionStatus,
   TransactionType,
 } from "../transaction/transaction.interface";
 import { Transaction } from "../transaction/transaction.model";
+import { userSearchableFields } from "../user/user.const";
 import {
   IAuthProvider,
   IUser,
@@ -100,10 +102,14 @@ const getAllUsers = async (query: Record<string, string>) => {
     query
   );
 
-  queryBuilder.filter().sort().paginate();
+  const users = queryBuilder
+    .search(userSearchableFields)
+    .filter()
+    .sort()
+    .paginate();
 
   const [data, meta] = await Promise.all([
-    queryBuilder.build(),
+    users.build(),
     queryBuilder.getMeta(),
   ]);
 
@@ -124,10 +130,14 @@ const getAllAgents = async (query: Record<string, string>) => {
     query
   );
 
-  queryBuilder.filter().sort().paginate();
+  const agents = queryBuilder
+    .search(agentSearchableFields)
+    .filter()
+    .sort()
+    .paginate();
 
   const [data, meta] = await Promise.all([
-    queryBuilder.build(),
+    agents.build(),
     queryBuilder.getMeta(),
   ]);
 
@@ -457,10 +467,17 @@ const addBalanceToWallet = async (
   session.startTransaction();
 
   try {
-    if (!amount || amount <= 0) {
+    if (!amount || amount <= 10) {
       throw new AppError(
         httpStatus.BAD_REQUEST,
         "Amount must be a positive number greater than 0"
+      );
+    }
+
+    if (amount > 100000) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Maximum Balance Amount is 1,00,000"
       );
     }
 

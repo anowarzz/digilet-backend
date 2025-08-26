@@ -18,7 +18,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "http://10.0.0.102:5173",
+      "http://10.0.0.103:5173",
       "https://digilet.vercel.app",
     ],
     credentials: true,

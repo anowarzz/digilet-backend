@@ -25,13 +25,13 @@ router.get(
 // get all users
 router.get(
   "/all-users",
-  checkAuth(UserRole.ADMIN),
+  checkAuth(UserRole.ADMIN, UserRole.USER, UserRole.AGENT),
   adminControllers.getAllUsers
 );
 // get all agents
 router.get(
   "/all-agents",
-  checkAuth(UserRole.ADMIN),
+  checkAuth(UserRole.ADMIN, UserRole.AGENT, UserRole.USER),
   adminControllers.getAllAgents
 );
 

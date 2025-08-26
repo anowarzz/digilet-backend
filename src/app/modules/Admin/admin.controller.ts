@@ -54,7 +54,7 @@ const getAllUsers = catchAsync(
   }
 );
 // -----------------------------------
-// get all users and agents
+// get all  agents
 const getAllAgents = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const query = req.query as Record<string, string>;
