@@ -109,6 +109,13 @@ const addMoney = async (payload: IAddMoneyPayload, userId: string) => {
       );
     }
 
+    if (sourceAgent?.status === UserStatus.PENDING) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "The given agent status is pending, cannot add money now"
+      );
+    }
+
     const sourceAgentWallet = await Wallet.findOne({
       userId: sourceAgent?._id,
     }).session(session);
@@ -265,6 +272,13 @@ const withdrawMoney = async (
       );
     }
 
+    if (targetAgent?.status === UserStatus.PENDING) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "The given agent status is pending, cannot add money now"
+      );
+    }
+
     const targetAgentWallet = await Wallet.findOne({
       userId: targetAgent?._id,
     }).session(session);
@@ -353,14 +367,14 @@ const sendMoney = async (payload: ISendMoneyPayload, userId: string) => {
     const senderUser = await User.findById(userId).session(session);
 
     if (senderUser?.status === UserStatus.BLOCKED) {
-      throw new AppError(httpStatus.FORBIDDEN, `Opps Your account is Blocked !`);
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        `Opps Your account is Blocked !`
+      );
     }
 
     if (senderUser?.status === UserStatus.SUSPENDED) {
-      throw new AppError(
-        httpStatus.FORBIDDEN,
-        `Your account is Suspended`
-      );
+      throw new AppError(httpStatus.FORBIDDEN, `Your account is Suspended`);
     }
 
     if (!receiverPhone || !amount) {

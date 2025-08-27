@@ -14,6 +14,7 @@ A secure and scalable digital wallet backend system built with Node.js, Express,
 - **Transaction History**: Complete transaction tracking and history
 - **Agent System**: Dedicated agent portal for cash-in/cash-out services
 - **Admin Dashboard**: Comprehensive admin controls for user and transaction management
+- **Analytics**: User, agent, and system-wide analytics and insights
 - **Security**: JWT-based authentication with bcrypt password hashing
 - **Validation**: Robust request validation using Zod schemas
 
@@ -135,7 +136,7 @@ To use the collection:
 
 1. Download the collection file from the repository
 2. Import it into Postman
-4. Start testing the endpoints
+3. Start testing the endpoints
 
 ### �🔐 Authentication & Authorization
 
@@ -173,8 +174,8 @@ Several endpoints support query parameters for filtering, sorting, and paginatio
 **Example Query Usage:**
 
 ```bash
-GET /api/v1/admin/users/all?page=2&limit=5&sort=-createdAt&role=USER&status=ACTIVE
-GET /api/v1/admin/transactions/all?page=1&limit=20&sort=-createdAt&transactionType=SEND_MONEY
+GET /api/v1/admin/all-users?page=2&limit=5&sort=-createdAt&role=USER&status=ACTIVE
+GET /api/v1/admin/all-transactions?page=1&limit=20&sort=-createdAt&transactionType=SEND_MONEY
 GET /api/v1/admin/wallets/all?limit=50&isBlocked=false&sort=balance
 ```
 
@@ -196,11 +197,12 @@ GET /api/v1/admin/wallets/all?limit=50&isBlocked=false&sort=balance
 
 ### User Management
 
-| Method | Endpoint                | Description              | Access        |
-| ------ | ----------------------- | ------------------------ | ------------- |
-| POST   | `/api/v1/user/register` | Register new user        | Public        |
-| GET    | `/api/v1/user/me`       | Get current user profile | Authenticated |
-| PATCH  | `/api/v1/user/:id`      | Update user profile      | Authenticated |
+| Method | Endpoint                    | Description              | Access        |
+| ------ | --------------------------- | ------------------------ | ------------- |
+| POST   | `/api/v1/user/register`     | Register new user        | Public        |
+| GET    | `/api/v1/user/me`           | Get current user profile | Authenticated |
+| PATCH  | `/api/v1/user/:id`          | Update user profile      | Authenticated |
+| GET    | `/api/v1/user/me/analytics` | Get user analytics       | Authenticated |
 
 #### User Registration Request Body Example:
 
@@ -232,12 +234,12 @@ GET /api/v1/admin/wallets/all?limit=50&isBlocked=false&sort=balance
 
 ### Wallet Operations
 
-| Method | Endpoint                    | Description                | Access     |
-| ------ | --------------------------- | -------------------------- | ---------- |
-| GET    | `/api/v1/wallet/me`         | Get current user's wallet  | User/Agent |
-| POST   | `/api/v1/wallet/add-money`  | Add money to wallet        | User/Agent |
-| POST   | `/api/v1/wallet/withdraw`   | Withdraw money from wallet | User/Agent |
-| POST   | `/api/v1/wallet/send-money` | Send money to another user | User/Agent |
+| Method | Endpoint                        | Description                | Access     |
+| ------ | ------------------------------- | -------------------------- | ---------- |
+| GET    | `/api/v1/wallet/me`             | Get current user's wallet  | User/Agent |
+| POST   | `/api/v1/wallet/add-money`      | Add money to wallet        | User/Agent |
+| POST   | `/api/v1/wallet/withdraw-money` | Withdraw money from wallet | User/Agent |
+| POST   | `/api/v1/wallet/send-money`     | Send money to another user | User/Agent |
 
 #### Add Money Request Body Example:
 
@@ -271,10 +273,11 @@ GET /api/v1/admin/wallets/all?limit=50&isBlocked=false&sort=balance
 
 ### Agent Operations
 
-| Method | Endpoint                 | Description                | Access |
-| ------ | ------------------------ | -------------------------- | ------ |
-| POST   | `/api/v1/agent/cash-in`  | Cash-in service for users  | Agent  |
-| POST   | `/api/v1/agent/cash-out` | Cash-out service for users | Agent  |
+| Method | Endpoint                     | Description                | Access |
+| ------ | ---------------------------- | -------------------------- | ------ |
+| POST   | `/api/v1/agent/cash-in`      | Cash-in service for users  | Agent  |
+| POST   | `/api/v1/agent/cash-out`     | Cash-out service for users | Agent  |
+| GET    | `/api/v1/agent/me/analytics` | Get agent analytics        | Agent  |
 
 #### Cash-In Request Body Example:
 
@@ -312,37 +315,45 @@ GET /api/v1/transaction/me/history?sort=-amount&limit=50
 
 ### Admin Operations
 
-| Method | Endpoint                                  | Description           | Access | Query Support |
-| ------ | ----------------------------------------- | --------------------- | ------ | ------------- |
-| POST   | `/api/v1/admin/create-admin`              | Create new admin      | Admin  | ❌            |
-| GET    | `/api/v1/admin/users/all`                 | Get all users         | Admin  | ✅            |
-| GET    | `/api/v1/admin/users/:userId`             | Get single user       | Admin  | ❌            |
-| PATCH  | `/api/v1/admin/users/update/:userId`      | Update user profile   | Admin  | ❌            |
-| DELETE | `/api/v1/admin/users/delete/:userId`      | Delete user           | Admin  | ❌            |
-| PATCH  | `/api/v1/admin/users/block/:userId`       | Block user wallet     | Admin  | ❌            |
-| PATCH  | `/api/v1/admin/users/unblock/:userId`     | Unblock user wallet   | Admin  | ❌            |
-| GET    | `/api/v1/admin/transactions/all`          | Get all transactions  | Admin  | ✅            |
-| GET    | `/api/v1/admin/transactions/user/:userId` | Get user transactions | Admin  | ✅            |
-| GET    | `/api/v1/admin/wallets/all`               | Get all wallets       | Admin  | ✅            |
-| GET    | `/api/v1/admin/wallets/:walletId`         | Get single wallet     | Admin  | ❌            |
-| PATCH  | `/api/v1/admin/wallets/add-balance/:id`   | Add balance to wallet | Admin  | ❌            |
-| PATCH  | `/api/v1/admin/agents/approve/:agentId`   | Approve agent         | Admin  | ❌            |
-| PATCH  | `/api/v1/admin/agents/suspend/:agentId`   | Suspend agent         | Admin  | ❌            |
+| Method | Endpoint                                  | Description              | Access | Query Support |
+| ------ | ----------------------------------------- | ------------------------ | ------ | ------------- |
+| POST   | `/api/v1/admin/create-admin`              | Create new admin         | Admin  | ❌            |
+| GET    | `/api/v1/admin/all/users-and-agents`      | Get all users and agents | Admin  | ✅            |
+| GET    | `/api/v1/admin/all-users`                 | Get all users            | Admin  | ✅            |
+| GET    | `/api/v1/admin/all-agents`                | Get all agents           | Admin  | ✅            |
+| GET    | `/api/v1/admin/all-admins`                | Get all admins           | Admin  | ✅            |
+| GET    | `/api/v1/admin/all-transactions`          | Get all transactions     | Admin  | ✅            |
+| GET    | `/api/v1/admin/transactions/user/:userId` | Get user transactions    | Admin  | ✅            |
+| GET    | `/api/v1/admin/wallets/all`               | Get all wallets          | Admin  | ✅            |
+| GET    | `/api/v1/admin/wallets/:walletId`         | Get single wallet        | Admin  | ❌            |
+| PATCH  | `/api/v1/admin/wallets/add-balance/:id`   | Add balance to wallet    | Admin  | ❌            |
+| GET    | `/api/v1/admin/users/:userId`             | Get single user          | Admin  | ❌            |
+| PATCH  | `/api/v1/admin/users/update/:userId`      | Update user profile      | Admin  | ❌            |
+| DELETE | `/api/v1/admin/users/delete/:userId`      | Delete user              | Admin  | ❌            |
+| DELETE | `/api/v1/admin/admins/delete/:adminId`    | Delete admin             | Admin  | ❌            |
+| PATCH  | `/api/v1/admin/wallet/block/:userId`      | Block user wallet        | Admin  | ❌            |
+| PATCH  | `/api/v1/admin/wallet/unblock/:userId`    | Unblock user wallet      | Admin  | ❌            |
+| PATCH  | `/api/v1/admin/users/block/:userId`       | Block user account       | Admin  | ❌            |
+| PATCH  | `/api/v1/admin/users/unblock/:userId`     | Unblock user account     | Admin  | ❌            |
+| PATCH  | `/api/v1/admin/agents/approve/:agentId`   | Approve agent            | Admin  | ❌            |
+| PATCH  | `/api/v1/admin/agents/reject/:agentId`    | Reject agent             | Admin  | ❌            |
+| PATCH  | `/api/v1/admin/agents/suspend/:agentId`   | Suspend agent            | Admin  | ❌            |
+| GET    | `/api/v1/admin/analytics/overview`        | Get system analytics     | Admin  | ❌            |
 
 #### Query Examples for Admin Endpoints:
 
 **Get All Users with Filtering:**
 
 ```bash
-GET /api/v1/admin/users/all
-GET /api/v1/admin/users/all?role=USER&status=ACTIVE&page=1&limit=10&sort=-createdAt
+GET /api/v1/admin/all-users
+GET /api/v1/admin/all-users?role=USER&status=ACTIVE&page=1&limit=10&sort=-createdAt
 ```
 
 **Get All Transactions with Filtering:**
 
 ```bash
-GET /api/v1/admin/transactions/all?transactionType=SEND_MONEY&status=COMPLETED&page=2&limit=20
-GET /api/v1/admin/transactions/all?sort=-createdAt&limit=50
+GET /api/v1/admin/all-transactions?transactionType=SEND_MONEY&status=COMPLETED&page=2&limit=20
+GET /api/v1/admin/all-transactions?sort=-createdAt&limit=50
 ```
 
 **Get User-Specific Transactions:**
@@ -387,12 +398,14 @@ GET /api/v1/admin/wallets/all?sort=balance&limit=100
 - Add/withdraw money from wallet
 - Send money to other users
 - View transaction history
+- Access personal analytics and insights
 
 ### AGENT
 
 - All user capabilities
 - Provide cash-in services to users
 - Provide cash-out services to users
+- Access agent-specific analytics
 - Requires admin approval
 
 ### ADMIN
@@ -402,6 +415,7 @@ GET /api/v1/admin/wallets/all?sort=balance&limit=100
 - Transaction monitoring and management
 - Wallet management and balance adjustments
 - Agent approval and suspension
+- System-wide analytics and overview
 
 ## 🔄 Transaction Types
 
@@ -425,20 +439,24 @@ GET /api/v1/admin/wallets/all?sort=balance&limit=100
 
 ```
 src/
-├── app/
-│   ├── config/          # Configuration files
-│   ├── middlewares/     # Custom middleware
-│   ├── modules/         # Feature modules
-│   │   ├── auth/        # Authentication
-│   │   ├── user/        # User management
-│   │   ├── wallet/      # Wallet operations
-│   │   ├── transaction/ # Transaction handling
-│   │   ├── agent/       # Agent operations
-│   │   └── admin/       # Admin operations
-│   ├── routes/          # Route definitions
-│   └── utils/           # Utility functions
 ├── app.ts               # Express app configuration
-└── server.ts            # Server entry point
+├── server.ts            # Server entry point
+├── app/
+│   ├── config/          # Configuration files (env, passport)
+│   ├── constants.ts     # Application constants
+│   ├── errorHelpers/    # Error handling utilities
+│   ├── helpers/         # Helper functions for error handling
+│   ├── interfaces/      # TypeScript interfaces and types
+│   ├── middlewares/     # Custom middleware (auth, validation, error handler)
+│   ├── modules/         # Feature modules
+│   │   ├── Admin/       # Admin operations
+│   │   ├── agent/       # Agent operations
+│   │   ├── auth/        # Authentication
+│   │   ├── transaction/ # Transaction handling
+│   │   ├── user/        # User management
+│   │   └── wallet/      # Wallet operations
+│   ├── routes/          # Route definitions
+│   └── utils/           # Utility functions (JWT, DB queries, etc.)
 ```
 
 ## 🚀 Available Scripts
