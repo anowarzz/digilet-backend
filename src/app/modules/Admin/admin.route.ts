@@ -107,6 +107,20 @@ router.patch(
   adminControllers.unblockUserWallet
 );
 
+// block user
+router.patch(
+  "/users/block/:userId",
+  checkAuth(UserRole.ADMIN),
+  adminControllers.blockUser
+);
+
+// unblock user
+router.patch(
+  "/users/unblock/:userId",
+  checkAuth(UserRole.ADMIN),
+  adminControllers.unblockUser
+);
+
 // approve agent
 router.patch(
   "/agents/approve/:agentId",

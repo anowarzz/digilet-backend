@@ -377,6 +377,121 @@ const unblockUserWallet = async (userId: string) => {
 };
 
 // -----------------------------------
+/*/ block user /*/
+const blockUser = async (userId: string) => {
+  const session = await Wallet.startSession();
+  session.startTransaction();
+
+  try {
+    const user = await User.findById(userId).session(session);
+
+    if (!user) {
+      throw new AppError(httpStatus.NOT_FOUND, "User not found");
+    }
+
+    if (user.role !== UserRole.USER) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "Cannot block non-regular users"
+      );
+    }
+
+    if (user.isDeleted) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "This user is already deleted"
+      );
+    }
+
+    if (user.status === UserStatus.BLOCKED) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "This user is already blocked"
+      );
+    }
+
+    // Set user status to BLOCKED and block their wallet
+    const blockedUser = await User.findByIdAndUpdate(
+      user._id,
+      { status: UserStatus.BLOCKED },
+      { new: true, session }
+    );
+
+    const blockedUserWallet = await Wallet.findOneAndUpdate(
+      { userId: user._id },
+      { isBlocked: true },
+      { new: true, session }
+    );
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return { blockedUser, blockedUserWallet };
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error("Error while blocking user:", error);
+    throw error;
+  }
+};
+
+// -----------------------------------
+/*/ unblock user /*/
+const unblockUser = async (userId: string) => {
+  const session = await Wallet.startSession();
+  session.startTransaction();
+
+  try {
+    const user = await User.findById(userId).session(session);
+
+    if (!user) {
+      throw new AppError(httpStatus.NOT_FOUND, "User not found");
+    }
+
+    if (user.role !== UserRole.USER) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "Cannot unblock non-regular users"
+      );
+    }
+
+    if (user.isDeleted) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "This user is already deleted"
+      );
+    }
+
+    if (user.status === UserStatus.ACTIVE) {
+      throw new AppError(httpStatus.BAD_REQUEST, "This user is already active");
+    }
+
+    // Set user status to ACTIVE and unblock their wallet
+    const unblockedUser = await User.findByIdAndUpdate(
+      user._id,
+      { status: UserStatus.ACTIVE },
+      { new: true, session }
+    );
+
+    const unblockedUserWallet = await Wallet.findOneAndUpdate(
+      { userId: user._id },
+      { isBlocked: false },
+      { new: true, session }
+    );
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return { unblockedUser, unblockedUserWallet };
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error("Error while unblocking user:", error);
+    throw error;
+  }
+};
+
+// -----------------------------------
 /*/ Approve a agent /*/
 const approveAgent = async (agentId: string) => {
   const session = await Wallet.startSession();
@@ -766,6 +881,8 @@ export const adminServices = {
   deleteUser,
   blockUserWallet,
   unblockUserWallet,
+  blockUser,
+  unblockUser,
   approveAgent,
   suspendAgent,
   getAllWallets,

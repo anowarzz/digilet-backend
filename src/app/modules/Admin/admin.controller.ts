@@ -242,6 +242,40 @@ const unblockUserWallet = catchAsync(
 );
 
 // -----------------------------------
+// block user
+const blockUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.userId;
+
+    const result = await adminServices.blockUser(userId);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "User Blocked Successfully",
+      data: result,
+    });
+  }
+);
+
+// -----------------------------------
+// unblock user
+const unblockUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.userId;
+
+    const result = await adminServices.unblockUser(userId);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "User Unblocked Successfully",
+      data: result,
+    });
+  }
+);
+
+// -----------------------------------
 // approve agent
 const approveAgent = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -347,6 +381,8 @@ export const adminControllers = {
   deleteUser,
   blockUserWallet,
   unblockUserWallet,
+  blockUser,
+  unblockUser,
   approveAgent,
   rejectAgent,
   suspendAgent,
