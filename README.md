@@ -5,6 +5,7 @@ A secure and scalable digital wallet backend system built with Node.js, Express,
 ## 🔗 Links
 
 - **Live API**: [https://digilet-server.vercel.app/](https://digilet-server.vercel.app)
+- **Frontend App**: [https://digilet.vercel.app/](https://digilet.vercel.app)
 
 ## 🌟 Features
 
