@@ -340,12 +340,7 @@ const blockUserWallet = async (userId: string) => {
       throw new AppError(httpStatus.NOT_FOUND, "User not found");
     }
 
-    if (user.role !== UserRole.USER) {
-      throw new AppError(
-        httpStatus.FORBIDDEN,
-        "Cannot block wallets for non-regular users"
-      );
-    }
+
 
     if (user.isDeleted) {
       throw new AppError(
