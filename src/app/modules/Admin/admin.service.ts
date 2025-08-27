@@ -179,7 +179,9 @@ const getAllAgents = async (query: Record<string, string>) => {
 
 /*/ get single user  /*/
 const getSingleUser = async (userId: string) => {
-  const user = await User.findById(userId).select("-password");
+  const user = await User.findById(userId)
+    .populate("wallet")
+    .select("-password");
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
@@ -195,13 +197,32 @@ const updateUserProfile = async (userId: string, payload: Partial<IUser>) => {
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
-  const updatedUser = await User.findByIdAndUpdate(userId, payload, {
+
+  // Ensure payload is an object, default to empty object if undefined
+  const updateData = payload || {};
+
+  // If password is being updated, hash it
+  if (updateData.password) {
+    updateData.password = await bcryptjs.hash(
+      updateData.password as string,
+      Number(envVars.BCRYPT_SALT_ROUNDS)
+    );
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
     new: true,
     runValidators: true,
   }).select("-password");
+
+  if (!updatedUser) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "Failed to update user"
+    );
+  }
+
   return updatedUser;
 };
-// Add to export: updateAnyUserProfile
 
 // -------------------------------
 

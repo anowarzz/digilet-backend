@@ -23,9 +23,8 @@ router.get(
 
 // update a user
 router.patch(
-  "/:id",
+  "/update/:id",
   checkAuth(...Object.values(UserRole)),
-  validateRequest(updateUserZodSchema),
   userControllers.updateUser
 );
 

@@ -88,7 +88,9 @@ const createUser = async (payload: Partial<IUser>) => {
 
 /*/ get user profile -> get me  /*/
 const getMyProfile = async (userId: string) => {
-  const user = await User.findById(userId).select("-password");
+  const user = await User.findById(userId)
+    .populate("wallet", "balance walletId")
+    .select("-password");
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User Not Found");

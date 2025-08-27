@@ -2,6 +2,7 @@ import { Router } from "express";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { validateRequest } from "../../middlewares/validateRequest";
 import { UserRole } from "../user/user.interface";
+
 import { createUserZodSchema } from "../user/user.validation";
 import { addBalanceZodSchema } from "../wallet/wallet.validation";
 import { adminControllers } from "./admin.controller";
@@ -94,14 +95,14 @@ router.delete(
 
 // block user wallet
 router.patch(
-  "/users/block/:userId",
+  "/wallet/block/:userId",
   checkAuth(UserRole.ADMIN),
   adminControllers.blockUserWallet
 );
 
 // unblock user wallet
 router.patch(
-  "/users/unblock/:userId",
+  "/wallet/unblock/:userId",
   checkAuth(UserRole.ADMIN),
   adminControllers.unblockUserWallet
 );

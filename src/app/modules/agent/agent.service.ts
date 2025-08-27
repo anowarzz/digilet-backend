@@ -107,7 +107,7 @@ const cashIn = async (payload: ICashInPayload, userId: string) => {
     if (cashInAgentWallet.isBlocked) {
       throw new AppError(
         httpStatus.FORBIDDEN,
-        "cash In agent wallet is blocked, can't do this transaction"
+        "Your wallet is blocked, can't do this transaction"
       );
     }
 
@@ -163,7 +163,7 @@ const cashIn = async (payload: ICashInPayload, userId: string) => {
     if (cashInAgentWallet.balance < sendAmount) {
       throw new AppError(
         httpStatus.BAD_REQUEST,
-        `cash In agent wallet does not have enough balance. Current balance is ${cashInAgentWallet.balance}`
+        `Your wallet does not have enough balance. Current balance is ${cashInAgentWallet.balance}`
       );
     }
 
@@ -284,7 +284,7 @@ const cashOut = async (payload: ICashOutPayload, userId: string) => {
     if (cashOutAgentWallet.isBlocked) {
       throw new AppError(
         httpStatus.FORBIDDEN,
-        "cash Out agent wallet is blocked, can't do this transaction"
+        "This user wallet is blocked, can't do this transaction"
       );
     }
 
