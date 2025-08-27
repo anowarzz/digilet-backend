@@ -36,6 +36,13 @@ router.get(
   adminControllers.getAllAgents
 );
 
+// get all admins
+router.get(
+  "/all-admins",
+  checkAuth(UserRole.ADMIN),
+  adminControllers.getAllAdmins
+);
+
 // get all transactions
 router.get(
   "/all-transactions",
@@ -91,6 +98,13 @@ router.delete(
   "/users/delete/:userId",
   checkAuth(UserRole.ADMIN),
   adminControllers.deleteUser
+);
+
+// delete an admin
+router.delete(
+  "/admins/delete/:adminId",
+  checkAuth(UserRole.ADMIN),
+  adminControllers.deleteAdmin
 );
 
 // block user wallet

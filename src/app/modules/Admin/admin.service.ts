@@ -177,7 +177,34 @@ const getAllAgents = async (query: Record<string, string>) => {
 
 // --------------------------------------
 
-/*/ get single user  /*/
+/*/ get all admins /*/
+const getAllAdmins = async (query: Record<string, string>) => {
+  const baseFilter = { isDeleted: false, role: UserRole.ADMIN };
+
+  // Create QueryBuilder with base filter
+  const queryBuilder = new QueryBuilder(
+    User.find(baseFilter).select("-password").populate("wallet") as any,
+    query
+  );
+
+  const admins = queryBuilder
+    .search(userSearchableFields)
+    .filter()
+    .sort()
+    .paginate();
+
+  const [data, meta] = await Promise.all([
+    admins.build(),
+    queryBuilder.getMeta(),
+  ]);
+
+  return {
+    meta,
+    data,
+  };
+};
+
+// --------------------------------------
 const getSingleUser = async (userId: string) => {
   const user = await User.findById(userId)
     .populate("wallet")
@@ -270,6 +297,34 @@ const deleteUser = async (userId: string) => {
     console.error("Error occured while deleting the user:", error);
     throw error;
   }
+};
+
+// -------------------------------
+/*/  delete an admin /*/
+const deleteAdmin = async (adminId: string) => {
+  const admin = await User.findById(adminId);
+
+  if (!admin) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Admin does not exist with this id"
+    );
+  }
+
+  if (admin.role !== UserRole.ADMIN) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "The specified user is not an admin"
+    );
+  }
+
+  const deletedAdmin = await User.findByIdAndUpdate(
+    adminId,
+    { isDeleted: true, status: UserStatus.SUSPENDED },
+    { new: true }
+  ).select("-password");
+
+  return { deletedAdmin: deletedAdmin };
 };
 
 // -----------------------------------
@@ -876,9 +931,11 @@ export const adminServices = {
   createAdmin,
   getAllUsers,
   getAllAgents,
+  getAllAdmins,
   getAllUsersAndAgents,
   getSingleUser,
   deleteUser,
+  deleteAdmin,
   blockUserWallet,
   unblockUserWallet,
   blockUser,

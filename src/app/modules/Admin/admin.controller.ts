@@ -7,30 +7,6 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { adminServices } from "./admin.service";
 
-// User Analytics
-const getUserAnalytics = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.params.userId;
-  const result = await adminServices.getUserAnalytics(userId);
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "User Analytics Retrieved Successfully",
-    data: result,
-  });
-});
-
-// Agent Analytics
-const getAgentAnalytics = catchAsync(async (req: Request, res: Response) => {
-  const agentId = req.params.agentId;
-  const result = await adminServices.getAgentAnalytics(agentId);
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Agent Analytics Retrieved Successfully",
-    data: result,
-  });
-});
-
 // create admin
 const createAdmin = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -96,6 +72,23 @@ const getAllAgents = catchAsync(
 );
 
 // -----------------------------------
+// get all admins
+const getAllAdmins = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const query = req.query as Record<string, string>;
+
+    const result = await adminServices.getAllAdmins(query);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Admins Retrieved Successfully",
+      meta: result.meta,
+      data: result.data,
+    });
+  }
+);
+
+// -----------------------------------
 // get single user
 const getSingleUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -147,6 +140,24 @@ const deleteUser = catchAsync(
       success: true,
       message: "User Deleted Successfully",
       data: deletedUser,
+    });
+  }
+);
+
+// -----------------------------------
+
+// delete an admin
+const deleteAdmin = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const adminId = req.params.adminId;
+
+    const deletedAdmin = await adminServices.deleteAdmin(adminId);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Admin Deleted Successfully",
+      data: deletedAdmin,
     });
   }
 );
@@ -375,10 +386,12 @@ export const adminControllers = {
   createAdmin,
   getAllUsers,
   getAllAgents,
+  getAllAdmins,
   getAllUsersAndAgents,
   addBalanceToWallet,
   getSingleUser,
   deleteUser,
+  deleteAdmin,
   blockUserWallet,
   unblockUserWallet,
   blockUser,
@@ -392,6 +405,4 @@ export const adminControllers = {
   getAllWallets,
   getSingleWallet,
   getAnalyticsOverview,
-  getUserAnalytics,
-  getAgentAnalytics,
 };

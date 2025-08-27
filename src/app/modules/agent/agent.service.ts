@@ -14,9 +14,6 @@ import { User } from "../user/user.model";
 import { Wallet } from "../wallet/wallet.model";
 import { ICashInPayload, ICashOutPayload } from "../wallet/wallet.types";
 
-
-
-
 //  Get own analytics
 const getMyAnalytics = async (agentId: string) => {
   const agentWallet = await Wallet.findOne({ userId: agentId });
@@ -36,9 +33,6 @@ const getMyAnalytics = async (agentId: string) => {
   const transactionVolume = volumeAgg[0]?.totalVolume || 0;
   return { transactionCount, transactionVolume };
 };
-
-
-
 
 ///*/ CASH IN agent adds money to user wallet /*/
 const cashIn = async (payload: ICashInPayload, userId: string) => {
